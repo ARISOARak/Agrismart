@@ -1,0 +1,12 @@
+# 1. Avec câble
+adb devices
+adb tcpip 5555
+
+# 2. Débrancher le câble
+
+# 3. En WiFi (remplacer IP)
+adb connect 192.168.1.45:5555
+adb devices
+
+# 4. Lancer l'app
+npx react-native run-android
