@@ -6,48 +6,71 @@ const registerUser = async (req, res) => {
   const { name, email, password, role } = req.body;
 
   try {
+    // Vérifier si l'utilisateur existe déjà
+    const existingUser = await userModel.getUserByEmail(email);
+    if (existingUser) {
+      return res.status(400).json({ message: 'Cet email est déjà utilisé' });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await userModel.createUser(
       name,
       email,
       hashedPassword,
-      role
+      role || 'agriculteur'
     );
-    res.json(user);
+    
+    res.status(201).json({ 
+      message: 'Utilisateur créé avec succès', 
+      user 
+    });
   } catch (error) {
-    res.status(500).send(error.message);
+    console.error("Erreur registerUser:", error);
+    res.status(500).json({ message: error.message });
   }
 };
-
-
-
 
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    // Vérifier si email et password sont fournis
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email et mot de passe requis' });
+    }
+
     const user = await userModel.getUserByEmail(email);
 
     if (!user) {
-      return res.status(404).send('Utilisateur non trouvé');
+      return res.status(401).json({ message: 'Utilisateur non trouvé' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      return res.status(401).send('Mot de passe incorrect');
+      return res.status(401).json({ message: 'Mot de passe incorrect' });
     }
 
     const token = jwt.sign(
-      { id: user.id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: '1d' }
+      { id: user.id, email: user.email, role: user.role },
+      process.env.JWT_SECRET || 'votre_secret_key',
+      { expiresIn: '7d' }
     );
 
-    res.json({ message: 'Connexion réussie', token });
+    res.json({ 
+      message: 'Connexion réussie', 
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
 
   } catch (error) {
-    res.status(500).send(error.message);
+    console.error("Erreur loginUser:", error);
+    res.status(500).json({ message: error.message });
   }
 };
 
