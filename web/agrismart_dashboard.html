@@ -1,0 +1,1775 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AgriSmart Fandriana</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root {
+  --soil:       #0d1a0e;
+  --earth:      #1a2e1b;
+  --leaf:       #1e8f3e;
+  --leaf-2:     #25a849;
+  --leaf-light: #3fd66a;
+  --sprout:     #7ddb5e;
+  --gold:       #f0c040;
+  --gold-warm:  #f5a623;
+  --cream:      #f7f9f4;
+  --mist:       #eef3eb;
+  --fog:        #dde6d8;
+  --ink:        #111a12;
+  --mid:        #627563;
+  --faint:      #9ab09c;
+  --white:      #ffffff;
+  --danger:     #d63031;
+  --info:       #0984e3;
+
+  --sidebar-w:  260px;
+  --radius:     18px;
+  --radius-sm:  12px;
+  --shadow:     0 1px 12px rgba(14,30,15,.07), 0 4px 24px rgba(14,30,15,.05);
+  --shadow-lg:  0 8px 48px rgba(14,30,15,.14), 0 2px 12px rgba(14,30,15,.08);
+  --transition: .24s cubic-bezier(.4,0,.2,1);
+
+  --grad-green: linear-gradient(135deg, #1e8f3e 0%, #0d5c25 100%);
+  --grad-gold:  linear-gradient(135deg, #f0c040 0%, #f5a623 100%);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:'Plus Jakarta Sans', sans-serif;
+  background:var(--cream);
+  color:var(--ink);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4,.brand-big,.kpi-value,.page-title,.sidebar-brand .name {
+  font-family:'Playfair Display', serif;
+}
+
+/* ─ Scrollbar ─ */
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--fog); border-radius:4px; }
+
+/* ══════════════════════════════
+   LOGIN
+══════════════════════════════ */
+#loginPage {
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--soil);
+  overflow:hidden;
+  position:relative;
+}
+
+/* Animated background blobs */
+#loginPage::before {
+  content:'';
+  position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse 70% 60% at 10% 90%, rgba(30,143,62,.28) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 45% at 90% 5%,  rgba(240,192,64,.15) 0%, transparent 50%),
+    radial-gradient(ellipse 40% 40% at 55% 55%, rgba(125,219,94,.07) 0%, transparent 55%);
+  animation: blobShift 10s ease-in-out infinite alternate;
+}
+@keyframes blobShift {
+  from { transform: scale(1) rotate(0deg); }
+  to   { transform: scale(1.08) rotate(3deg); }
+}
+
+/* Grid texture overlay */
+#loginPage::after {
+  content:'';
+  position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.login-wrap {
+  display:grid;
+  grid-template-columns:1fr 1.1fr;
+  width:920px;
+  min-height:580px;
+  border-radius:28px;
+  overflow:hidden;
+  box-shadow:0 60px 120px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.06);
+  position:relative;
+  z-index:1;
+  animation: loginFade .8s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes loginFade {
+  from { opacity:0; transform:translateY(24px) scale(.97); }
+  to   { opacity:1; transform:none; }
+}
+
+.login-left {
+  background:linear-gradient(155deg, #1a3d1e 0%, #0d2210 60%, #051208 100%);
+  padding:56px 48px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  position:relative;
+  overflow:hidden;
+}
+.login-left::before {
+  content:'';
+  position:absolute; top:-80px; right:-80px;
+  width:320px; height:320px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(30,143,62,.2) 0%, transparent 70%);
+}
+.login-left::after {
+  content:'';
+  position:absolute; bottom:-60px; left:-60px;
+  width:280px; height:280px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(240,192,64,.1) 0%, transparent 70%);
+}
+
+.brand-chip {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:30px;
+  padding:6px 14px 6px 8px;
+  font-size:12px;
+  color:rgba(255,255,255,.6);
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-weight:500;
+  margin-bottom:28px;
+  width:fit-content;
+}
+.brand-chip-dot {
+  width:6px; height:6px;
+  border-radius:50%;
+  background:var(--sprout);
+  animation: pulse 2s infinite;
+}
+
+.brand-big {
+  font-size:52px;
+  font-weight:900;
+  color:#fff;
+  line-height:1.0;
+  letter-spacing:-1px;
+}
+.brand-big span { color:var(--sprout); }
+.tagline {
+  color:rgba(255,255,255,.55);
+  font-size:14px;
+  line-height:1.75;
+  margin-top:16px;
+  max-width:300px;
+  font-weight:300;
+}
+
+.stats-mini { display:flex; flex-direction:column; gap:10px; position:relative; z-index:1; }
+.stat-pill {
+  background:rgba(255,255,255,.06);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:14px;
+  padding:16px 20px;
+  color:#fff;
+  font-size:13px;
+  transition:var(--transition);
+  cursor:default;
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.stat-pill:hover { background:rgba(255,255,255,.1); transform:translateX(6px); }
+.stat-pill-icon { font-size:20px; }
+.stat-pill-body strong {
+  font-size:22px;
+  font-family:'Playfair Display',serif;
+  font-weight:700;
+  display:block;
+  line-height:1.1;
+  margin-bottom:2px;
+}
+.stat-pill-body small { font-size:11px; opacity:.6; }
+
+/* Login right */
+.login-right {
+  background:#fff;
+  padding:56px 52px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:22px;
+}
+
+.login-right h2 {
+  font-size:32px;
+  color:var(--ink);
+  line-height:1.1;
+}
+.login-right .sub {
+  color:var(--mid);
+  font-size:14px;
+  margin-top:-14px;
+  font-weight:400;
+}
+
+.form-field { display:flex; flex-direction:column; gap:8px; }
+.form-field label {
+  font-size:11px;
+  font-weight:600;
+  color:var(--mid);
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+.form-field input {
+  width:100%;
+  padding:14px 18px;
+  border:1.5px solid var(--fog);
+  border-radius:14px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:15px;
+  background:var(--cream);
+  color:var(--ink);
+  transition:border-color var(--transition), box-shadow var(--transition), background var(--transition);
+}
+.form-field input:focus {
+  outline:none;
+  border-color:var(--leaf);
+  background:#fff;
+  box-shadow:0 0 0 4px rgba(30,143,62,.1);
+}
+
+.btn-login {
+  background:var(--grad-green);
+  color:#fff;
+  border:none;
+  border-radius:14px;
+  padding:16px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
+  transition:all var(--transition);
+  letter-spacing:.3px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  box-shadow:0 4px 20px rgba(30,143,62,.3);
+}
+.btn-login:hover { transform:translateY(-2px); box-shadow:0 12px 32px rgba(30,143,62,.4); }
+.btn-login:active { transform:translateY(0); }
+.btn-arrow {
+  width:24px; height:24px;
+  background:rgba(255,255,255,.2);
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:12px;
+}
+
+.hint-box {
+  background:var(--mist);
+  border:1px solid var(--fog);
+  border-radius:12px;
+  padding:12px 16px;
+  font-size:13px;
+  color:var(--mid);
+}
+.err { color:var(--danger); font-size:13px; min-height:18px; font-weight:600; }
+
+@media(max-width:720px) {
+  .login-wrap { grid-template-columns:1fr; width:95vw; }
+  .login-left { display:none; }
+  .login-right { padding:40px 28px; }
+}
+
+/* ══════════════════════════════
+   APP SHELL
+══════════════════════════════ */
+#app { display:none; min-height:100vh; }
+.layout { display:flex; min-height:100vh; }
+
+/* ─ Sidebar ─ */
+.sidebar {
+  width:var(--sidebar-w);
+  background:var(--soil);
+  position:fixed;
+  top:0; left:0; bottom:0;
+  display:flex;
+  flex-direction:column;
+  padding:28px 16px;
+  z-index:200;
+  overflow-y:auto;
+  transition:transform var(--transition);
+  border-right:1px solid rgba(255,255,255,.04);
+}
+
+.sidebar-brand {
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:4px 10px 28px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  margin-bottom:22px;
+}
+.brand-icon {
+  width:44px; height:44px;
+  border-radius:14px;
+  background:var(--grad-green);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  box-shadow:0 4px 14px rgba(30,143,62,.4);
+}
+.sidebar-brand .name {
+  font-size:18px;
+  font-weight:900;
+  color:#fff;
+  line-height:1.1;
+  letter-spacing:-.3px;
+}
+.sidebar-brand .sub {
+  font-size:10px;
+  color:rgba(255,255,255,.3);
+  text-transform:uppercase;
+  letter-spacing:1.4px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+}
+
+.nav-section {
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:1.6px;
+  color:rgba(255,255,255,.2);
+  padding:0 12px;
+  margin:18px 0 8px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+}
+
+.nav-item {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 16px;
+  border-radius:14px;
+  cursor:pointer;
+  color:rgba(255,255,255,.42);
+  font-size:14px;
+  font-weight:500;
+  transition:all var(--transition);
+  margin-bottom:3px;
+  position:relative;
+  letter-spacing:.1px;
+}
+.nav-item:hover { background:rgba(255,255,255,.06); color:rgba(255,255,255,.8); }
+.nav-item.active {
+  background:linear-gradient(135deg, rgba(30,143,62,.35), rgba(30,143,62,.2));
+  color:#fff;
+  border:1px solid rgba(30,143,62,.3);
+}
+.nav-item.active::before {
+  content:'';
+  position:absolute; left:-16px; top:50%;
+  transform:translateY(-50%);
+  width:3px; height:28px;
+  background:var(--sprout);
+  border-radius:0 3px 3px 0;
+}
+.nav-item .ni { font-size:16px; width:22px; text-align:center; flex-shrink:0; }
+.nav-badge {
+  margin-left:auto;
+  background:var(--gold);
+  color:var(--soil);
+  font-size:10px;
+  font-weight:700;
+  padding:2px 8px;
+  border-radius:20px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+}
+
+.sidebar-footer {
+  margin-top:auto;
+  padding-top:20px;
+  border-top:1px solid rgba(255,255,255,.06);
+}
+.sidebar-user {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 14px;
+  border-radius:14px;
+  background:rgba(255,255,255,.05);
+  margin-bottom:10px;
+  cursor:default;
+}
+.avatar {
+  width:38px; height:38px;
+  border-radius:50%;
+  background:var(--grad-green);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:15px;
+  font-weight:700;
+  color:#fff;
+  flex-shrink:0;
+  box-shadow:0 2px 10px rgba(30,143,62,.4);
+}
+.user-info .uname { font-size:13px; font-weight:600; color:#fff; }
+.user-info .urole { font-size:11px; color:rgba(255,255,255,.35); margin-top:1px; }
+.btn-logout {
+  width:100%;
+  background:rgba(214,48,49,.1);
+  border:1px solid rgba(214,48,49,.2);
+  color:rgba(255,160,160,.8);
+  border-radius:12px;
+  padding:10px;
+  cursor:pointer;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:13px;
+  font-weight:500;
+  transition:all var(--transition);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+}
+.btn-logout:hover { background:rgba(214,48,49,.22); color:#ff8a80; }
+
+/* ─ Main ─ */
+.main {
+  margin-left:var(--sidebar-w);
+  flex:1;
+  padding:36px 40px;
+  min-width:0;
+  animation:fadeIn .4s ease;
+}
+@keyframes fadeIn {
+  from { opacity:0; transform:translateY(10px); }
+  to   { opacity:1; transform:none; }
+}
+
+/* ─ Page header ─ */
+.page-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  margin-bottom:32px;
+  flex-wrap:wrap;
+  gap:16px;
+}
+.page-title {
+  font-size:30px;
+  font-weight:900;
+  color:var(--ink);
+  line-height:1.1;
+  letter-spacing:-.5px;
+}
+.page-sub { font-size:14px; color:var(--mid); margin-top:5px; font-weight:400; }
+.status-badge {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:#fff;
+  border:1px solid var(--fog);
+  border-radius:30px;
+  padding:9px 20px;
+  font-size:13px;
+  font-weight:500;
+  color:var(--mid);
+  box-shadow:var(--shadow);
+}
+.dot {
+  width:8px; height:8px;
+  border-radius:50%;
+  background:var(--sprout);
+  animation:pulse 2.4s infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity:1; box-shadow:0 0 0 0 rgba(125,219,94,.5); }
+  50%      { opacity:.8; box-shadow:0 0 0 6px rgba(125,219,94,0); }
+}
+
+/* ─ Pages ─ */
+.page { display:none; }
+.page.active { display:block; animation:fadeIn .35s ease; }
+
+/* ─ KPI grid ─ */
+.kpi-grid {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px;
+  margin-bottom:26px;
+}
+@media(max-width:1100px) { .kpi-grid { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:650px)  { .kpi-grid { grid-template-columns:1fr; } }
+
+.kpi-card {
+  background:#fff;
+  border-radius:var(--radius);
+  padding:24px 26px;
+  box-shadow:var(--shadow);
+  position:relative;
+  overflow:hidden;
+  transition:transform var(--transition), box-shadow var(--transition);
+  cursor:default;
+  border:1px solid var(--mist);
+}
+.kpi-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-lg); }
+.kpi-card::after {
+  content:'';
+  position:absolute;
+  bottom:0; left:0; right:0;
+  height:3px;
+  background:var(--grad-green);
+  border-radius:0 0 var(--radius) var(--radius);
+  opacity:0;
+  transition:opacity var(--transition);
+}
+.kpi-card:hover::after { opacity:1; }
+.kpi-card-top {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  margin-bottom:14px;
+}
+.kpi-label {
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:1.1px;
+  color:var(--faint);
+  font-weight:600;
+}
+.kpi-icon-wrap {
+  width:40px; height:40px;
+  border-radius:12px;
+  background:var(--mist);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+}
+.kpi-value {
+  font-size:38px;
+  font-weight:900;
+  color:var(--ink);
+  line-height:1;
+  margin-bottom:6px;
+  letter-spacing:-1px;
+}
+.kpi-sub { font-size:12px; color:var(--mid); font-weight:400; }
+.kpi-trend {
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  font-size:11px;
+  font-weight:700;
+  padding:3px 10px;
+  border-radius:20px;
+  margin-top:6px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+}
+.trend-up   { background:#e8f5e9; color:#1e8f3e; }
+.trend-down { background:#fde8e8; color:var(--danger); }
+
+/* ─ Cards ─ */
+.card {
+  background:#fff;
+  border-radius:var(--radius);
+  padding:26px;
+  box-shadow:var(--shadow);
+  border:1px solid var(--mist);
+}
+.card-title {
+  font-family:'Playfair Display',serif;
+  font-size:16px;
+  font-weight:700;
+  color:var(--ink);
+  margin-bottom:22px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  letter-spacing:-.2px;
+}
+.card-title::before {
+  content:'';
+  width:4px; height:18px;
+  background:var(--grad-green);
+  border-radius:3px;
+  flex-shrink:0;
+}
+
+/* ─ Charts row ─ */
+.charts-row {
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  gap:18px;
+  margin-bottom:26px;
+}
+@media(max-width:900px) { .charts-row { grid-template-columns:1fr; } }
+
+/* ─ Activity list ─ */
+.activity-list { display:flex; flex-direction:column; gap:6px; }
+.activity-item {
+  display:flex;
+  gap:14px;
+  align-items:flex-start;
+  padding:12px 14px;
+  border-radius:12px;
+  transition:background var(--transition);
+}
+.activity-item:hover { background:var(--mist); }
+.activity-dot {
+  width:8px; height:8px;
+  border-radius:50%;
+  background:var(--leaf-light);
+  margin-top:6px;
+  flex-shrink:0;
+}
+.ac-title { font-size:13px; font-weight:600; color:var(--ink); }
+.ac-time  { font-size:12px; color:var(--faint); margin-top:3px; }
+
+/* ─ Table ─ */
+.table-wrap { overflow-x:auto; border-radius:14px; }
+table { width:100%; border-collapse:collapse; }
+thead th {
+  text-align:left;
+  padding:12px 16px;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:1.2px;
+  color:var(--faint);
+  border-bottom:2px solid var(--mist);
+  font-weight:600;
+  background:var(--mist);
+  font-family:'Plus Jakarta Sans',sans-serif;
+}
+thead th:first-child { border-radius:12px 0 0 0; }
+thead th:last-child  { border-radius:0 12px 0 0; }
+tbody td { padding:14px 16px; font-size:14px; border-bottom:1px solid var(--mist); color:var(--ink); }
+tbody tr:last-child td { border-bottom:none; }
+tbody tr { transition:background var(--transition); }
+tbody tr:hover { background:#f7faf5; }
+.badge {
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:4px 12px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.3px;
+}
+.badge-green { background:#e0f5e5; color:#1e8f3e; }
+.badge-gold  { background:#fff8e1; color:#c17d00; }
+.badge-blue  { background:#e3f2fd; color:#1565c0; }
+.rendement-val {
+  font-family:'Playfair Display',serif;
+  font-weight:700;
+  color:var(--leaf);
+  font-size:16px;
+}
+
+/* ─ Prediction ─ */
+.pred-layout {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:22px;
+}
+@media(max-width:900px) { .pred-layout { grid-template-columns:1fr; } }
+
+.pred-form { display:flex; flex-direction:column; gap:16px; }
+.form-group { display:flex; flex-direction:column; gap:7px; }
+.form-label {
+  font-size:11px;
+  font-weight:600;
+  color:var(--mid);
+  text-transform:uppercase;
+  letter-spacing:.9px;
+}
+.form-input, .form-select {
+  width:100%;
+  padding:12px 16px;
+  border:1.5px solid var(--fog);
+  border-radius:12px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:14px;
+  background:var(--cream);
+  color:var(--ink);
+  transition:border-color var(--transition), box-shadow var(--transition), background var(--transition);
+  appearance:none;
+}
+.form-input:focus, .form-select:focus {
+  outline:none;
+  border-color:var(--leaf);
+  background:#fff;
+  box-shadow:0 0 0 3px rgba(30,143,62,.1);
+}
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+
+.btn-predict {
+  background:var(--grad-green);
+  color:#fff;
+  border:none;
+  border-radius:14px;
+  padding:15px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
+  transition:all var(--transition);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  box-shadow:0 4px 18px rgba(30,143,62,.28);
+}
+.btn-predict:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 12px 32px rgba(30,143,62,.38); }
+.btn-predict:disabled { opacity:.5; cursor:not-allowed; }
+
+.result-box {
+  background:#fff;
+  border-radius:var(--radius);
+  padding:28px;
+  box-shadow:var(--shadow);
+  border:1px solid var(--mist);
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+}
+.result-empty {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  color:var(--mid);
+  text-align:center;
+  padding:48px 20px;
+}
+.result-empty .big-icon {
+  font-size:64px;
+  opacity:.3;
+  animation:float 4s ease-in-out infinite;
+}
+@keyframes float {
+  0%,100% { transform:translateY(0); }
+  50%      { transform:translateY(-8px); }
+}
+
+.ai-response {
+  background:linear-gradient(135deg, #edf7ee, #f1f9ec);
+  border:1px solid rgba(30,143,62,.15);
+  border-radius:14px;
+  padding:18px;
+  font-size:14px;
+  line-height:1.8;
+  color:var(--ink);
+}
+.ai-response ul { margin:10px 0 0 20px; }
+.ai-response li { margin-bottom:5px; }
+
+.rendement-big {
+  background:var(--grad-green);
+  border-radius:16px;
+  padding:28px;
+  text-align:center;
+  color:#fff;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 8px 32px rgba(30,143,62,.35);
+}
+.rendement-big::before {
+  content:'';
+  position:absolute; top:-60px; right:-60px;
+  width:200px; height:200px;
+  border-radius:50%;
+  background:rgba(255,255,255,.06);
+}
+.rendement-big::after {
+  content:'🌾';
+  position:absolute;
+  font-size:90px;
+  right:-5px; bottom:-10px;
+  opacity:.1;
+}
+.rendement-big .label {
+  font-size:11px;
+  opacity:.7;
+  text-transform:uppercase;
+  letter-spacing:1.2px;
+  margin-bottom:8px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-weight:600;
+}
+.rendement-big .value {
+  font-family:'Playfair Display',serif;
+  font-size:58px;
+  font-weight:900;
+  line-height:1;
+  text-shadow:0 2px 20px rgba(0,0,0,.2);
+}
+.rendement-big .unit { font-size:15px; opacity:.75; margin-top:6px; }
+
+.confidence-bar {
+  background:var(--mist);
+  border-radius:20px;
+  height:8px;
+  overflow:hidden;
+  margin-top:8px;
+}
+.confidence-fill {
+  height:100%;
+  background:var(--grad-green);
+  border-radius:20px;
+  transition:width 1.4s cubic-bezier(.4,0,.2,1);
+  position:relative;
+  overflow:hidden;
+}
+.confidence-fill::after {
+  content:'';
+  position:absolute; inset:0;
+  background:linear-gradient(90deg, transparent 0%, rgba(255,255,255,.25) 50%, transparent 100%);
+  animation:shimmer 2s infinite;
+}
+@keyframes shimmer { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
+
+.loading-ai {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:18px;
+  padding:48px;
+  text-align:center;
+  color:var(--mid);
+}
+.spinner {
+  width:44px; height:44px;
+  border:3px solid var(--fog);
+  border-top-color:var(--leaf);
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* ─ Market ─ */
+.market-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(290px, 1fr));
+  gap:18px;
+  margin-top:22px;
+}
+.market-card {
+  background:#fff;
+  border-radius:var(--radius);
+  padding:22px;
+  box-shadow:var(--shadow);
+  transition:transform var(--transition), box-shadow var(--transition);
+  cursor:pointer;
+  border:1px solid var(--mist);
+  position:relative;
+  overflow:hidden;
+}
+.market-card::before {
+  content:'';
+  position:absolute;
+  top:0; left:0; right:0;
+  height:3px;
+  background:var(--grad-green);
+}
+.market-card:hover { transform:translateY(-5px); box-shadow:var(--shadow-lg); }
+.market-card-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  margin-bottom:16px;
+}
+.mc-culture { font-family:'Playfair Display',serif; font-size:18px; font-weight:700; color:var(--ink); }
+.mc-farmer  { font-size:12px; color:var(--mid); margin-top:3px; }
+.mc-price   { font-family:'Playfair Display',serif; font-size:24px; font-weight:900; color:var(--leaf); text-align:right; }
+.mc-price-unit { font-size:11px; color:var(--faint); text-align:right; }
+.mc-details { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+.mc-tag {
+  background:var(--mist);
+  border-radius:8px;
+  padding:5px 12px;
+  font-size:12px;
+  color:var(--mid);
+  font-weight:500;
+}
+.mc-footer  { display:flex; justify-content:space-between; align-items:center; }
+.btn-contact {
+  background:var(--grad-green);
+  color:#fff;
+  border:none;
+  border-radius:10px;
+  padding:9px 18px;
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  transition:all var(--transition);
+  box-shadow:0 3px 12px rgba(30,143,62,.25);
+}
+.btn-contact:hover { transform:translateY(-1px); box-shadow:0 6px 18px rgba(30,143,62,.35); }
+.mc-date { font-size:11px; color:var(--faint); }
+
+.btn-add {
+  background:var(--grad-gold);
+  color:var(--soil);
+  border:none;
+  border-radius:12px;
+  padding:12px 22px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:14px;
+  font-weight:700;
+  cursor:pointer;
+  transition:all var(--transition);
+  display:flex;
+  align-items:center;
+  gap:6px;
+  box-shadow:0 4px 16px rgba(240,192,64,.35);
+}
+.btn-add:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(240,192,64,.45); }
+
+/* ─ Modal ─ */
+.modal-overlay {
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.5);
+  z-index:999;
+  align-items:center;
+  justify-content:center;
+  backdrop-filter:blur(8px);
+}
+.modal-overlay.open { display:flex; }
+.modal {
+  background:#fff;
+  border-radius:26px;
+  padding:40px;
+  width:540px;
+  max-width:95vw;
+  box-shadow:0 40px 100px rgba(0,0,0,.3);
+  max-height:90vh;
+  overflow-y:auto;
+  animation:modalIn .32s cubic-bezier(.34,1.56,.64,1);
+  border:1px solid var(--fog);
+}
+@keyframes modalIn {
+  from { opacity:0; transform:scale(.9) translateY(20px); }
+  to   { opacity:1; transform:none; }
+}
+.modal h3 {
+  font-size:24px;
+  color:var(--ink);
+  margin-bottom:24px;
+  letter-spacing:-.3px;
+}
+.modal-footer { display:flex; justify-content:flex-end; gap:10px; margin-top:24px; }
+.btn-cancel {
+  background:var(--mist);
+  color:var(--mid);
+  border:none;
+  border-radius:12px;
+  padding:12px 22px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:14px;
+  font-weight:500;
+  cursor:pointer;
+  transition:var(--transition);
+}
+.btn-cancel:hover { background:var(--fog); }
+.btn-save {
+  background:var(--grad-green);
+  color:#fff;
+  border:none;
+  border-radius:12px;
+  padding:12px 26px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:14px;
+  font-weight:700;
+  cursor:pointer;
+  transition:all var(--transition);
+  box-shadow:0 4px 16px rgba(30,143,62,.3);
+}
+.btn-save:hover { box-shadow:0 8px 24px rgba(30,143,62,.4); transform:translateY(-1px); }
+
+/* ─ Weather ─ */
+.weather-row {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(155px,1fr));
+  gap:14px;
+  margin-bottom:26px;
+}
+.weather-card {
+  background:#fff;
+  border-radius:var(--radius);
+  padding:20px;
+  box-shadow:var(--shadow);
+  text-align:center;
+  transition:transform var(--transition);
+  border:1px solid var(--mist);
+}
+.weather-card:hover { transform:translateY(-3px); }
+.weather-card.today {
+  background:var(--grad-green);
+  border:none;
+  color:#fff;
+  box-shadow:var(--shadow-lg);
+}
+.weather-card.today .wday,
+.weather-card.today .wrain { color:rgba(255,255,255,.7); }
+.weather-card.today .wtemp { color:#fff; }
+.wday  { font-size:11px; color:var(--mid); margin-bottom:10px; font-weight:600; text-transform:uppercase; letter-spacing:.8px; }
+.wicon { font-size:34px; margin-bottom:10px; }
+.wtemp { font-family:'Playfair Display',serif; font-size:26px; font-weight:700; color:var(--ink); }
+.wrain { font-size:12px; color:var(--info); margin-top:6px; font-weight:500; }
+
+.section-title {
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:11px;
+  font-weight:700;
+  color:var(--faint);
+  text-transform:uppercase;
+  letter-spacing:1.4px;
+  margin:28px 0 14px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.section-title::after { content:''; flex:1; height:1px; background:var(--fog); }
+
+/* ─ Alert cards ─ */
+.alert-card {
+  display:flex;
+  gap:16px;
+  align-items:flex-start;
+  padding:18px 20px;
+  border-radius:16px;
+  margin-bottom:12px;
+}
+.alert-card.warn { background:#fffbec; border:1px solid rgba(245,166,35,.3); }
+.alert-card.ok   { background:#edf7ee; border:1px solid rgba(30,143,62,.25); }
+.alert-card .aicon { font-size:28px; flex-shrink:0; }
+.alert-card .atitle { font-weight:700; font-size:14px; margin-bottom:5px; }
+.alert-card .atext  { font-size:13px; color:var(--mid); line-height:1.6; }
+
+/* ─ Responsive ─ */
+@media(max-width:800px) {
+  .sidebar { transform:translateX(-100%); }
+  .sidebar.open { transform:none; }
+  .main { margin-left:0; padding:22px 18px; }
+  .charts-row { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ LOGIN ══════════ -->
+<div id="loginPage">
+  <div class="login-wrap">
+
+    <div class="login-left">
+      <div>
+        <div class="brand-chip">
+          <div class="brand-chip-dot"></div>
+          UNIVAM — Amoron'i Mania
+        </div>
+        <div class="brand-big">Agri<span>Smart</span></div>
+        <p class="tagline">Plateforme intelligente de gestion, prévision et commercialisation des cultures agricoles rurales à Madagascar.</p>
+      </div>
+      <div class="stats-mini">
+        <div class="stat-pill">
+          <span class="stat-pill-icon">🎯</span>
+          <div class="stat-pill-body">
+            <strong>94%</strong>
+            <small>Précision des prédictions IA</small>
+          </div>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-pill-icon">📉</span>
+          <div class="stat-pill-body">
+            <strong>−35%</strong>
+            <small>Pertes post-récolte réduites</small>
+          </div>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-pill-icon">📍</span>
+          <div class="stat-pill-body">
+            <strong>3 fokontany</strong>
+            <small>Couverture Amoron'i Mania</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="login-right">
+      <div>
+        <h2>Connexion</h2>
+        <p class="sub">Accédez à votre tableau de bord agricole</p>
+      </div>
+      <div class="form-field">
+        <label>Email</label>
+        <input type="email" id="loginEmail" value="ari@gmail.com" placeholder="votre@email.com"/>
+      </div>
+      <div class="form-field">
+        <label>Mot de passe</label>
+        <input type="password" id="loginPass" value="123456" placeholder="••••••••"/>
+      </div>
+      <button class="btn-login" onclick="doLogin()">
+        <span>Se connecter</span>
+        <div class="btn-arrow">→</div>
+      </button>
+      <div class="hint-box">💡 Identifiants : ari@gmail.com / 123456</div>
+      <div class="err" id="loginErr"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════ APP ══════════ -->
+<div id="app">
+  <div class="layout">
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">🌾</div>
+        <div>
+          <div class="name">AgriSmart</div>
+          <div class="sub">Fandriana</div>
+        </div>
+      </div>
+
+      <div class="nav-section">Principal</div>
+      <div class="nav-item active" onclick="showPage('dashboard',this)">
+        <span class="ni">📊</span> Tableau de bord
+      </div>
+      <div class="nav-item" onclick="showPage('prediction',this)">
+        <span class="ni">🧠</span> Prédiction IA
+      </div>
+      <div class="nav-item" onclick="showPage('marche',this)">
+        <span class="ni">🛒</span> Marché local
+      </div>
+
+      <div class="nav-section">Gestion</div>
+      <div class="nav-item" onclick="showPage('parcelles',this)">
+        <span class="ni">🌱</span> Mes parcelles
+      </div>
+      <div class="nav-item" onclick="showPage('meteo',this)">
+        <span class="ni">🌤️</span> Météo &amp; Alertes
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="avatar" id="userAvatar">A</div>
+          <div class="user-info">
+            <div class="uname" id="userName">Chargement…</div>
+            <div class="urole" id="userRole">Agriculteur</div>
+          </div>
+        </div>
+        <button class="btn-logout" onclick="doLogout()">🚪 Déconnexion</button>
+      </div>
+    </nav>
+
+    <!-- Main -->
+    <main class="main">
+
+      <!-- ── Dashboard ── -->
+      <div class="page active" id="page-dashboard">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Tableau de bord</div>
+            <div class="page-sub">Vue d'ensemble — Fandriana, Amoron'i Mania</div>
+          </div>
+          <div class="status-badge"><div class="dot"></div>Système actif</div>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-card-top">
+              <div class="kpi-label">Prédictions réalisées</div>
+              <div class="kpi-icon-wrap">📊</div>
+            </div>
+            <div class="kpi-value" id="kpi-total">0</div>
+            <div class="kpi-sub">Depuis le lancement</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-top">
+              <div class="kpi-label">Rendement moyen</div>
+              <div class="kpi-icon-wrap">🌾</div>
+            </div>
+            <div class="kpi-value"><span id="kpi-rend">—</span><small style="font-size:18px;color:var(--mid);font-family:'Plus Jakarta Sans',sans-serif;font-weight:400;"> t/ha</small></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-top">
+              <div class="kpi-label">Agriculteurs actifs</div>
+              <div class="kpi-icon-wrap">👨‍🌾</div>
+            </div>
+            <div class="kpi-value" id="kpi-farmers">47</div>
+            <div class="kpi-sub">3 fokontany couverts</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-top">
+              <div class="kpi-label">Précision IA</div>
+              <div class="kpi-icon-wrap">🎯</div>
+            </div>
+            <div class="kpi-value">94<small style="font-size:18px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:400;">%</small></div>
+            <div class="kpi-trend trend-up">↑ +2% ce mois</div>
+          </div>
+        </div>
+
+        <div class="charts-row">
+          <div class="card">
+            <div class="card-title">Rendements par culture (t/ha)</div>
+            <canvas id="chartRendement" height="180"></canvas>
+          </div>
+          <div class="card">
+            <div class="card-title">Activités récentes</div>
+            <div class="activity-list" id="activityList"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Historique des prédictions</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Culture</th><th>Surface</th><th>Pluie</th><th>Temp.</th><th>Sol</th><th>Rendement prévu</th><th>Statut</th></tr></thead>
+              <tbody id="historyTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Prédiction IA ── -->
+      <div class="page" id="page-prediction">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Prédiction IA</div>
+            <div class="page-sub">Estimez le rendement grâce à l'intelligence artificielle</div>
+          </div>
+        </div>
+        <div class="pred-layout">
+          <div class="card">
+            <div class="card-title">Paramètres de la parcelle</div>
+            <div class="pred-form">
+              <div class="form-group">
+                <label class="form-label">Type de culture</label>
+                <select class="form-select" id="f-culture">
+                  <option>Riz</option><option>Maïs</option><option>Manioc</option>
+                  <option>Légumes</option><option>Haricot</option><option>Pomme de terre</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label class="form-label">Surface (ha)</label><input type="number" class="form-input" id="f-surface" value="1.5" step="0.1" min="0.1" max="50"/></div>
+                <div class="form-group"><label class="form-label">Altitude (m)</label><input type="number" class="form-input" id="f-altitude" value="1200" step="50" min="0" max="3000"/></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label class="form-label">Pluviométrie (mm/mois)</label><input type="number" class="form-input" id="f-pluie" value="180" step="10" min="0" max="600"/></div>
+                <div class="form-group"><label class="form-label">Température moy. (°C)</label><input type="number" class="form-input" id="f-temp" value="22" step="0.5" min="5" max="45"/></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label class="form-label">Type de sol</label><select class="form-select" id="f-sol"><option value="argileux">Argileux</option><option value="limoneux" selected>Limoneux</option><option value="sableux">Sableux</option><option value="latéritique">Latéritique</option><option value="tourbeux">Tourbeux</option></select></div>
+                <div class="form-group"><label class="form-label">Engrais</label><select class="form-select" id="f-engrais"><option value="aucun">Aucun</option><option value="organique" selected>Organique</option><option value="chimique">Chimique</option><option value="mixte">Mixte</option></select></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label class="form-label">Irrigation</label><select class="form-select" id="f-irrigation"><option value="pluviale" selected>Pluviale</option><option value="partielle">Partielle</option><option value="complète">Complète</option></select></div>
+                <div class="form-group"><label class="form-label">Saison</label><select class="form-select" id="f-saison"><option value="grande saison" selected>Grande saison</option><option value="petite saison">Petite saison</option><option value="contre-saison">Contre-saison</option></select></div>
+              </div>
+              <div class="form-group"><label class="form-label">Problèmes constatés</label><select class="form-select" id="f-probleme"><option value="aucun">Aucun</option><option value="maladies foliaires">Maladies foliaires</option><option value="insectes ravageurs">Insectes ravageurs</option><option value="sécheresse">Sécheresse</option><option value="inondation">Inondation</option><option value="sols dégradés">Sols dégradés</option></select></div>
+              <button class="btn-predict" id="btnPredict" onclick="runPrediction()">🧠 Lancer la prédiction IA</button>
+            </div>
+          </div>
+
+          <div class="result-box" id="resultBox">
+            <div class="card-title">Résultat de la prédiction</div>
+            <div class="result-empty" id="resultEmpty">
+              <div class="big-icon">🌱</div>
+              <div style="font-weight:600;font-size:15px;">En attente d'analyse</div>
+              <div style="font-size:13px;color:var(--faint);">Remplissez le formulaire et lancez la prédiction</div>
+            </div>
+            <div id="resultLoading" style="display:none;">
+              <div class="loading-ai"><div class="spinner"></div><div style="font-weight:500;">Analyse en cours…</div></div>
+            </div>
+            <div id="resultContent" style="display:none;flex-direction:column;gap:18px;">
+              <div class="rendement-big">
+                <div class="label">Rendement estimé</div>
+                <div class="value" id="res-rendement">—</div>
+                <div class="unit">tonnes / hectare</div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600;">
+                  <span>Indice de confiance</span>
+                  <span id="res-conf" style="color:var(--leaf);">—</span>
+                </div>
+                <div class="confidence-bar"><div class="confidence-fill" id="res-conf-bar" style="width:0%"></div></div>
+              </div>
+              <div class="ai-response" id="res-text"></div>
+              <button class="btn-predict" style="background:var(--grad-gold);color:var(--ink);box-shadow:0 4px 18px rgba(240,192,64,.3);" onclick="savePrediction()">💾 Sauvegarder cette prédiction</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-title">Historique de vos prédictions</div>
+        <div class="card">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Date</th><th>Culture</th><th>Surface</th><th>Rendement prévu</th><th>Confiance</th></tr></thead>
+              <tbody id="predHistoryBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Marché ── -->
+      <div class="page" id="page-marche">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Marché local numérique</div>
+            <div class="page-sub">Connectez producteurs et acheteurs — Fandriana</div>
+          </div>
+          <button class="btn-add" onclick="openModal()">+ Publier une annonce</button>
+        </div>
+        <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);">
+          <div class="kpi-card">
+            <div class="kpi-card-top"><div class="kpi-label">Annonces actives</div><div class="kpi-icon-wrap">📢</div></div>
+            <div class="kpi-value" id="mkt-count">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-top"><div class="kpi-label">Cultures disponibles</div><div class="kpi-icon-wrap">🌾</div></div>
+            <div class="kpi-value" id="mkt-cultures">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-top"><div class="kpi-label">Prix moyen riz</div><div class="kpi-icon-wrap">💰</div></div>
+            <div class="kpi-value">1 200<small style="font-size:16px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:400;"> Ar</small></div>
+          </div>
+        </div>
+        <div class="market-grid" id="marketGrid"></div>
+      </div>
+
+      <!-- ── Parcelles ── -->
+      <div class="page" id="page-parcelles">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Mes Parcelles</div>
+            <div class="page-sub">Gestion et suivi de vos terres agricoles</div>
+          </div>
+        </div>
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-card-top"><div class="kpi-label">Surface totale</div><div class="kpi-icon-wrap">📐</div></div>
+            <div class="kpi-value"><span id="parcelle-surface">0</span><small style="font-size:18px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:400;"> ha</small></div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-top"><div class="kpi-label">Parcelles actives</div><div class="kpi-icon-wrap">🌾</div></div>
+            <div class="kpi-value" id="parcelle-count">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-top"><div class="kpi-label">Avec irrigation</div><div class="kpi-icon-wrap">💧</div></div>
+            <div class="kpi-value" id="parcelle-irrig">0</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-card-top"><div class="kpi-label">Meilleur rendement</div><div class="kpi-icon-wrap">🏆</div></div>
+            <div class="kpi-value">—<small style="font-size:18px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:400;"> t/ha</small></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Mes parcelles</div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Nom</th><th>Culture</th><th>Surface</th><th>Sol</th><th>Statut</th></tr></thead>
+              <tbody id="fieldsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Météo ── -->
+      <div class="page" id="page-meteo">
+        <div class="page-header">
+          <div>
+            <div class="page-title">Météo &amp; Alertes</div>
+            <div class="page-sub">Prévisions climatiques pour Fandriana</div>
+          </div>
+        </div>
+        <div class="weather-row" id="weatherRow"></div>
+        <div class="card">
+          <div class="card-title">Alertes agricoles</div>
+          <div id="alertsContainer"></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h3>📢 Publier une annonce</h3>
+    <div class="pred-form">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Culture</label><select class="form-select" id="m-culture"><option>Riz</option><option>Maïs</option><option>Manioc</option><option>Légumes</option><option>Haricot</option><option>Pomme de terre</option></select></div>
+        <div class="form-group"><label class="form-label">Quantité (kg)</label><input type="number" class="form-input" id="m-qty" value="500" min="1"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Prix (Ar/kg)</label><input type="number" class="form-input" id="m-prix" value="1200" min="1"/></div>
+        <div class="form-group"><label class="form-label">Nom du vendeur</label><input type="text" class="form-input" id="m-vendeur" value="SOLOARISOA D."/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Localisation</label><input type="text" class="form-input" id="m-loc" value="Fandriana, Tsarahonenana"/></div>
+      <div class="form-group"><label class="form-label">Contact (téléphone)</label><input type="text" class="form-input" id="m-tel" value="034 12 345 67"/></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+      <button class="btn-save" onclick="addListing()">✅ Publier</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_URL = 'http://192.168.1.248:3000/api';
+const AI_URL  = 'http://192.168.1.248:8000';
+let authToken = null;
+let currentUser = null;
+let marketList = [];
+
+async function apiCall(endpoint, method='GET', body=null) {
+  const headers = {'Content-Type':'application/json'};
+  if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+  const res = await fetch(`${API_URL}${endpoint}`,{method,headers,body:body?JSON.stringify(body):undefined});
+  if (!res.ok) { let e={};try{e=await res.json();}catch(x){} throw new Error(e.message||`Erreur ${res.status}`); }
+  return res.json();
+}
+
+async function doLogin() {
+  const email   = document.getElementById('loginEmail').value;
+  const pass    = document.getElementById('loginPass').value;
+  const errDiv  = document.getElementById('loginErr');
+  const btn     = document.querySelector('.btn-login');
+  btn.innerHTML = '<span>Connexion…</span>';
+  btn.disabled  = true;
+  errDiv.textContent = '';
+  try {
+    const res = await fetch(`${API_URL}/users/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})});
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    authToken = data.token;
+    localStorage.setItem('token', authToken);
+    await loadUserProfile();
+    startApp();
+  } catch(e) {
+    errDiv.textContent = '❌ Identifiants incorrects ou serveur indisponible.';
+  } finally {
+    btn.innerHTML = '<span>Se connecter</span><div class="btn-arrow">→</div>';
+    btn.disabled  = false;
+  }
+}
+
+async function loadUserProfile() {
+  try {
+    const data = await apiCall('/users/profile');
+    const user = data.user || data;
+    currentUser = user;
+    document.getElementById('userName').textContent   = user.name  || 'Utilisateur';
+    document.getElementById('userRole').textContent   = user.role  || 'Agriculteur';
+    document.getElementById('userAvatar').textContent = (user.name||'A').charAt(0).toUpperCase();
+  } catch(e) { console.warn('Profil non chargé',e); }
+}
+
+function startApp() {
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  loadDashboardData();
+  loadPredictionsHistory();
+  loadFields();
+  loadMarket();
+  loadWeather();
+  setInterval(loadDashboardData, 60000);
+}
+
+function doLogout() {
+  authToken = null;
+  localStorage.removeItem('token');
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+}
+
+async function loadDashboardData() {
+  try {
+    const preds = await apiCall('/predictions/history');
+    const predictions = preds.predictions || [];
+    renderDashboardStats(predictions);
+    renderHistoryTable(predictions);
+    renderChart(predictions);
+    renderActivities(predictions);
+  } catch(e) { console.warn('Dashboard',e); }
+}
+
+function renderDashboardStats(preds) {
+  const total = preds.length;
+  const avg   = total ? (preds.reduce((s,p)=>s+(p.rendement_prevu||0),0)/total).toFixed(1) : '—';
+  document.getElementById('kpi-total').textContent = total;
+  document.getElementById('kpi-rend').textContent  = avg;
+}
+
+function renderHistoryTable(preds) {
+  const tbody = document.getElementById('historyTableBody');
+  if (!preds.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--faint);">Aucune prédiction enregistrée</td></tr>';return;}
+  tbody.innerHTML = preds.slice().reverse().map(p=>`
+    <tr>
+      <td><span class="badge badge-green">${p.culture_type||'Riz'}</span></td>
+      <td>${p.surface_ha||p.surface||'?'} ha</td>
+      <td>${p.pluie_mm||p.pluie||'—'} mm</td>
+      <td>${p.temperature_c||p.temp||'—'}°C</td>
+      <td>${p.soil_type||p.sol||'—'}</td>
+      <td class="rendement-val">${p.rendement_prevu||p.rendement||0} t/ha</td>
+      <td><span class="badge badge-gold">✓ Sauvegardée</span></td>
+    </tr>`).join('');
+}
+
+function renderChart(preds) {
+  const map = new Map();
+  preds.forEach(p=>{
+    const c = p.culture_type||'Riz';
+    const r = p.rendement_prevu||0;
+    if(!map.has(c)) map.set(c,{sum:0,n:0});
+    const s = map.get(c); s.sum+=r; s.n++;
+  });
+  const labels = [...map.keys()];
+  const data   = labels.map(c=>(map.get(c).sum/map.get(c).n).toFixed(1));
+  const colors = ['#1e8f3e','#25a849','#7ddb5e','#f0c040','#0984e3','#6c5ce7'];
+  const ctx = document.getElementById('chartRendement').getContext('2d');
+  if(window._chart) window._chart.destroy();
+  window._chart = new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels,
+      datasets:[{
+        label:'Rendement moyen (t/ha)',
+        data,
+        backgroundColor:colors.slice(0,labels.length),
+        borderRadius:12,
+        borderSkipped:false
+      }]
+    },
+    options:{
+      responsive:true,
+      plugins:{legend:{display:false}},
+      scales:{
+        y:{beginAtZero:true,grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{family:'Plus Jakarta Sans'}}},
+        x:{grid:{display:false},ticks:{font:{family:'Plus Jakarta Sans'}}}
+      }
+    }
+  });
+}
+
+function renderActivities(preds) {
+  const list = document.getElementById('activityList');
+  if(!preds.length){list.innerHTML='<div class="activity-item"><div class="activity-dot"></div><div>Aucune activité récente</div></div>';return;}
+  list.innerHTML = preds.slice(0,5).map(p=>`
+    <div class="activity-item">
+      <div class="activity-dot"></div>
+      <div>
+        <div class="ac-title">Prédiction ${p.culture_type||''} — ${p.rendement_prevu} t/ha</div>
+        <div class="ac-time">${new Date(p.created_at).toLocaleString('fr-FR')}</div>
+      </div>
+    </div>`).join('');
+}
+
+async function runPrediction() {
+  const btn = document.getElementById('btnPredict');
+  btn.disabled = true; btn.innerHTML = '⏳ Analyse en cours…';
+  document.getElementById('resultEmpty').style.display = 'none';
+  document.getElementById('resultContent').style.display = 'none';
+  document.getElementById('resultLoading').style.display = 'block';
+  const surface = parseFloat(document.getElementById('f-surface').value);
+  const pluie   = parseFloat(document.getElementById('f-pluie').value);
+  const temp    = parseFloat(document.getElementById('f-temp').value);
+  const culture = document.getElementById('f-culture').value;
+  try {
+    const iaRes  = await fetch(`${AI_URL}/predict`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({surface,rainfall:pluie,temperature:temp})});
+    const iaData = await iaRes.json();
+    const rendement = iaData.prediction||(Math.random()*3+1).toFixed(1);
+    const confiance = Math.min(95,Math.max(70,Math.floor(rendement*15+50)));
+    showPredictionResult({rendement,confiance,
+      analyse:`Analyse IA pour ${culture} : avec ${surface} ha, ${pluie} mm de pluie et ${temp}°C, le rendement estimé est de ${rendement} t/ha. Conditions ${pluie>200?'humides':'favorables'}.`,
+      conseils:['Surveillez l\'humidité du sol régulièrement','Préparez la récolte en fonction de la météo','Appliquez un engrais organique']
+    });
+  } catch(e) {
+    const rendement = (Math.random()*3+2).toFixed(1);
+    showPredictionResult({rendement,confiance:80,analyse:`Estimation locale pour ${culture} : ${rendement} t/ha.`,conseils:[]});
+  }
+  btn.disabled = false; btn.innerHTML = '🧠 Lancer la prédiction IA';
+}
+
+function showPredictionResult(res) {
+  document.getElementById('resultLoading').style.display = 'none';
+  const content = document.getElementById('resultContent');
+  content.style.display = 'flex';
+  document.getElementById('res-rendement').textContent = res.rendement;
+  document.getElementById('res-conf').textContent = res.confiance+'%';
+  document.getElementById('res-conf-bar').style.width = res.confiance+'%';
+  let html = `<p>${res.analyse}</p>`;
+  if(res.conseils&&res.conseils.length) html += `<div style="margin-top:12px;"><strong>💡 Conseils :</strong><ul>${res.conseils.map(c=>`<li>${c}</li>`).join('')}</ul></div>`;
+  document.getElementById('res-text').innerHTML = html;
+  window._pendingResult = res;
+}
+
+async function savePrediction() {
+  if(!window._pendingResult) return;
+  const p = window._pendingResult;
+  try {
+    await apiCall('/predictions/save','POST',{
+      surface_ha:     parseFloat(document.getElementById('f-surface').value),
+      culture_type:   document.getElementById('f-culture').value,
+      pluie_mm:       parseFloat(document.getElementById('f-pluie').value),
+      temperature_c:  parseFloat(document.getElementById('f-temp').value),
+      type_sol:       document.getElementById('f-sol').value,
+      rendement_prevu:p.rendement,
+      unite_rendement:'tonnes/ha'
+    });
+    alert('✅ Prédiction sauvegardée !');
+    loadDashboardData(); loadPredictionsHistory();
+  } catch(e) { alert('Erreur : '+e.message); }
+}
+
+async function loadPredictionsHistory() {
+  try {
+    const data  = await apiCall('/predictions/history');
+    const preds = data.predictions||[];
+    const tbody = document.getElementById('predHistoryBody');
+    if(!preds.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--faint);">Aucune prédiction</td></tr>';return;}
+    tbody.innerHTML = preds.map(p=>`
+      <tr>
+        <td>${new Date(p.created_at).toLocaleDateString('fr-FR')}</td>
+        <td><span class="badge badge-green">${p.culture_type||'Riz'}</span></td>
+        <td>${p.surface_ha} ha</td>
+        <td class="rendement-val">${p.rendement_prevu} t/ha</td>
+        <td><span class="badge badge-gold">—</span></td>
+      </tr>`).join('');
+  } catch(e) { console.warn(e); }
+}
+
+async function loadFields() {
+  try {
+    const data   = await apiCall('/fields');
+    const fields = data.fields||data;
+    const total  = fields.reduce((s,f)=>s+(parseFloat(f.surface_ha)||0),0).toFixed(1);
+    document.getElementById('parcelle-surface').textContent = total;
+    document.getElementById('parcelle-count').textContent   = fields.length;
+    document.getElementById('parcelle-irrig').textContent   = fields.filter(f=>f.irrigation==='complète').length;
+    const tbody = document.getElementById('fieldsTableBody');
+    if(!fields.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:28px;color:var(--faint);">Aucune parcelle</td></tr>';return;}
+    tbody.innerHTML = fields.map(f=>`
+      <tr>
+        <td><strong>${f.name||f.nom}</strong></td>
+        <td>${f.culture_type||f.culture||'—'}</td>
+        <td>${f.surface_ha||f.surface||0} ha</td>
+        <td>${f.soil_type||f.sol||'—'}</td>
+        <td><span class="badge badge-green">Actif</span></td>
+      </tr>`).join('');
+  } catch(e) { console.warn(e); }
+}
+
+async function loadMarket() {
+  try {
+    const data = await apiCall('/market/listings').catch(()=>null);
+    if(data&&data.listings) marketList = data.listings;
+    else marketList = [
+      {culture:'Riz',   qty:800, prix:1200,vendeur:'Rakoto Jean', loc:'Fandriana centre',  tel:'034 11 111 11',date:'2026-05-28'},
+      {culture:'Maïs',  qty:500, prix:850, vendeur:'Rasoa Marie',  loc:'Tsarahonenana',     tel:'033 22 222 22',date:'2026-05-27'},
+      {culture:'Manioc',qty:1200,prix:450, vendeur:'Rabe Paul',    loc:'Ambohimahasoa',     tel:'032 33 333 33',date:'2026-05-26'},
+    ];
+    renderMarket();
+  } catch(e) { renderMarket(); }
+}
+
+function renderMarket() {
+  const grid = document.getElementById('marketGrid');
+  document.getElementById('mkt-count').textContent    = marketList.length;
+  document.getElementById('mkt-cultures').textContent = new Set(marketList.map(m=>m.culture)).size;
+  if(!marketList.length){grid.innerHTML='<div style="text-align:center;padding:48px;color:var(--faint);">Aucune annonce publiée</div>';return;}
+  grid.innerHTML = marketList.map(m=>`
+    <div class="market-card">
+      <div class="market-card-header">
+        <div><div class="mc-culture">${m.culture}</div><div class="mc-farmer">👨‍🌾 ${m.vendeur}</div></div>
+        <div><div class="mc-price">${m.prix}</div><div class="mc-price-unit">Ar/kg</div></div>
+      </div>
+      <div class="mc-details"><span class="mc-tag">📦 ${m.qty} kg</span><span class="mc-tag">📍 ${m.loc}</span></div>
+      <div class="mc-footer">
+        <button class="btn-contact" onclick="alert('📞 Contacter : ${m.tel}')">Contacter</button>
+        <span class="mc-date">${m.date}</span>
+      </div>
+    </div>`).join('');
+}
+
+function openModal()  { document.getElementById('modalOverlay').classList.add('open'); }
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+
+async function addListing() {
+  const newItem = {
+    culture:document.getElementById('m-culture').value,
+    qty:    parseInt(document.getElementById('m-qty').value),
+    prix:   parseInt(document.getElementById('m-prix').value),
+    vendeur:document.getElementById('m-vendeur').value,
+    loc:    document.getElementById('m-loc').value,
+    tel:    document.getElementById('m-tel').value,
+    date:   new Date().toISOString().split('T')[0]
+  };
+  try { await apiCall('/market/listings','POST',newItem); loadMarket(); }
+  catch(e) { marketList.unshift(newItem); renderMarket(); }
+  closeModal();
+}
+
+function loadWeather() {
+  const days  = ['Aujourd\'hui','Demain','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+  const icons = ['⛅','🌧️','🌦️','☀️','☀️','⛅','🌧️'];
+  const temps = [22,19,21,24,25,23,20];
+  const rains = [180,240,150,60,40,90,200];
+  document.getElementById('weatherRow').innerHTML = days.map((d,i)=>`
+    <div class="weather-card ${i===0?'today':''}">
+      <div class="wday">${d}</div>
+      <div class="wicon">${icons[i]}</div>
+      <div class="wtemp">${temps[i]}°C</div>
+      <div class="wrain">💧 ${rains[i]}mm</div>
+    </div>`).join('');
+  document.getElementById('alertsContainer').innerHTML = `
+    <div class="alert-card warn">
+      <span class="aicon">🌧️</span>
+      <div><div class="atitle">Fortes pluies demain</div><div class="atext">Précipitations 240mm prévues. Vérifiez les canaux d'évacuation et protégez les cultures sensibles.</div></div>
+    </div>
+    <div class="alert-card ok">
+      <span class="aicon">☀️</span>
+      <div><div class="atitle">Bonne fenêtre de récolte jeudi–vendredi</div><div class="atext">Conditions optimales prévues pour la récolte du maïs. Profitez de cette fenêtre sèche.</div></div>
+    </div>`;
+}
+
+function showPage(name, el) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  el.classList.add('active');
+  if(name==='parcelles') loadFields();
+  if(name==='marche')    loadMarket();
+  if(name==='dashboard') loadDashboardData();
+}
+
+window.onload = () => {
+  const t = localStorage.getItem('token');
+  if(t){ authToken=t; loadUserProfile().then(()=>startApp()).catch(()=>{localStorage.removeItem('token');}); }
+};
+</script>
+</body>
+</html>

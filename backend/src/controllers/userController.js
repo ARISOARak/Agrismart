@@ -6,7 +6,6 @@ const registerUser = async (req, res) => {
   const { name, email, password, role } = req.body;
 
   try {
-    // Vérifier si l'utilisateur existe déjà
     const existingUser = await userModel.getUserByEmail(email);
     if (existingUser) {
       return res.status(400).json({ message: 'Cet email est déjà utilisé' });
@@ -34,7 +33,6 @@ const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Vérifier si email et password sont fournis
     if (!email || !password) {
       return res.status(400).json({ message: 'Email et mot de passe requis' });
     }
@@ -74,4 +72,25 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser };
+// ✅ NOUVEAU : Récupérer le profil de l'utilisateur connecté
+const getProfile = async (req, res) => {
+  try {
+    const userId = req.user.id; // fourni par authMiddleware
+    const user = await userModel.getUserById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Utilisateur non trouvé' });
+    }
+    // On renvoie les infos sans le mot de passe
+    res.json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role
+    });
+  } catch (error) {
+    console.error("Erreur getProfile:", error);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+};
+
+module.exports = { registerUser, loginUser, getProfile };

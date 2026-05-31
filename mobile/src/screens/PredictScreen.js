@@ -36,11 +36,11 @@ const PredictForm = ({ visible, onClose, onSubmit, loading, editingPrediction, s
   }, [editingPrediction, visible]);
 
   const fields = [
-    { key: 'culture',     label: 'Culture',      placeholder: 'Ex: riz, maïs, manioc', icon: 'sprout',              keyboard: 'default'  },
-    { key: 'typeSol',     label: 'Type du sol',  placeholder: 'Ex: argileux, sableux', icon: 'shovel',              keyboard: 'default'  },
-    { key: 'surface',     label: 'Surface (ha)',  placeholder: 'Ex: 1.5',               icon: 'resize',              keyboard: 'numeric'  },
-    { key: 'pluie',       label: 'Pluie (mm)',    placeholder: '120',                   icon: 'weather-rainy',       keyboard: 'numeric'  },
-    { key: 'temperature', label: 'Température (°C)',  placeholder: '25',               icon: 'thermometer',         keyboard: 'numeric'  },
+    { key: 'culture',     label: 'Culture',      placeholder: 'Culture', icon: 'sprout',              keyboard: 'default'  },
+    { key: 'typeSol',     label: 'Type du sol',  placeholder: 'Type du sol', icon: 'shovel',              keyboard: 'default'  },
+    { key: 'surface',     label: 'Surface (ha)',  placeholder: 'Surface (ha)',               icon: 'resize',              keyboard: 'numeric'  },
+    { key: 'pluie',       label: 'Pluie (mm)',    placeholder: 'Pluie (mm)',                   icon: 'weather-rainy',       keyboard: 'numeric'  },
+    { key: 'temperature', label: 'Température (°C)',  placeholder: 'Température (°C)',               icon: 'thermometer',         keyboard: 'numeric'  },
   ];
 
   const handleSubmit = () => {
@@ -82,7 +82,7 @@ const PredictForm = ({ visible, onClose, onSubmit, loading, editingPrediction, s
                 <View key={f.key} style={styles.inputWrapper}>
                   <MaterialCommunityIcons
                     name={f.icon}
-                    size={20}
+                    size={25}
                     color="#aaa"
                     style={styles.inputIcon}
                   />

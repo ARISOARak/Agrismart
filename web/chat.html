@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>AgriSmart Profile</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Inter',sans-serif;
+    background:#f4f7fb;
+    color:#1e293b;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+    width:260px;
+    height:100vh;
+    position:fixed;
+    left:0;
+    top:0;
+    background:linear-gradient(180deg,#0f172a,#1e293b);
+    padding:30px 20px;
+    color:white;
+}
+
+.logo{
+    font-size:28px;
+    font-weight:800;
+    margin-bottom:40px;
+    text-align:center;
+}
+
+.menu{
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+}
+
+.menu-item{
+    padding:15px;
+    border-radius:14px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.menu-item:hover{
+    background:rgba(255,255,255,0.1);
+    transform:translateX(5px);
+}
+
+.active{
+    background:linear-gradient(135deg,#16a34a,#15803d);
+}
+
+/* MAIN */
+
+.main{
+    margin-left:260px;
+    padding:30px;
+}
+
+/* TOPBAR */
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:30px;
+}
+
+.topbar h1{
+    font-size:32px;
+    font-weight:800;
+}
+
+.topbar p{
+    color:#64748b;
+    margin-top:5px;
+}
+
+/* PROFILE HERO */
+
+.profile-hero{
+    background:linear-gradient(135deg,#16a34a,#15803d);
+    border-radius:30px;
+    padding:40px;
+    color:white;
+    position:relative;
+    overflow:hidden;
+    margin-bottom:30px;
+}
+
+.profile-hero::before{
+    content:'';
+    position:absolute;
+    width:300px;
+    height:300px;
+    background:rgba(255,255,255,0.08);
+    border-radius:50%;
+    top:-100px;
+    right:-80px;
+}
+
+.profile-content{
+    position:relative;
+    z-index:2;
+    display:flex;
+    align-items:center;
+    gap:30px;
+}
+
+.avatar{
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    background:white;
+    color:#16a34a;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:40px;
+    font-weight:800;
+}
+
+.profile-info h2{
+    font-size:34px;
+    margin-bottom:10px;
+}
+
+.profile-info p{
+    opacity:0.9;
+    margin-bottom:20px;
+}
+
+.badges{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.badge{
+    background:rgba(255,255,255,0.15);
+    padding:10px 16px;
+    border-radius:30px;
+    font-size:14px;
+    backdrop-filter:blur(8px);
+}
+
+/* STATS */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+    margin-bottom:30px;
+}
+
+.card{
+    background:white;
+    border-radius:24px;
+    padding:25px;
+    box-shadow:0 5px 20px rgba(0,0,0,0.08);
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+}
+
+.card-title{
+    color:#64748b;
+    margin-bottom:10px;
+    text-transform:uppercase;
+    font-size:13px;
+    letter-spacing:1px;
+}
+
+.card-value{
+    font-size:40px;
+    font-weight:800;
+    color:#16a34a;
+}
+
+/* GRID */
+
+.grid{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:20px;
+    margin-bottom:30px;
+}
+
+.panel{
+    background:white;
+    border-radius:24px;
+    padding:25px;
+    box-shadow:0 5px 20px rgba(0,0,0,0.08);
+}
+
+.panel h3{
+    margin-bottom:20px;
+}
+
+/* TIMELINE */
+
+.timeline{
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+}
+
+.timeline-item{
+    display:flex;
+    gap:15px;
+}
+
+.dot{
+    width:14px;
+    height:14px;
+    border-radius:50%;
+    background:#16a34a;
+    margin-top:6px;
+}
+
+.timeline-item h4{
+    margin-bottom:5px;
+}
+
+.timeline-item p{
+    color:#64748b;
+    font-size:14px;
+}
+
+/* SETTINGS */
+
+.settings{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+}
+
+.setting-card{
+    background:white;
+    border-radius:24px;
+    padding:25px;
+    box-shadow:0 5px 20px rgba(0,0,0,0.08);
+}
+
+.setting-card h4{
+    margin-bottom:15px;
+}
+
+.setting-item{
+    padding:12px 0;
+    border-bottom:1px solid #eee;
+    display:flex;
+    justify-content:space-between;
+}
+
+.setting-item:last-child{
+    border:none;
+}
+
+/* FOOTER */
+
+.footer{
+    margin-top:40px;
+    text-align:center;
+    color:#64748b;
+    font-size:14px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:900px){
+
+    .sidebar{
+        display:none;
+    }
+
+    .main{
+        margin-left:0;
+    }
+
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .profile-content{
+        flex-direction:column;
+        text-align:center;
+    }
+
+}
+
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+
+<div class="sidebar">
+
+    <div class="logo">🌾 AgriSmart</div>
+
+    <div class="menu">
+        <div class="menu-item">🏠 Dashboard</div>
+        <div class="menu-item">🧠 IA Predictions</div>
+        <div class="menu-item">🌱 Parcelles</div>
+        <div class="menu-item">📊 Analytics</div>
+        <div class="menu-item">📋 Historique</div>
+        <div class="menu-item active">👨‍🌾 Profil</div>
+        <div class="menu-item">⚙️ Paramètres</div>
+    </div>
+
+</div>
+
+<!-- MAIN -->
+
+<div class="main">
+
+    <!-- TOPBAR -->
+
+    <div class="topbar">
+        <div>
+            <h1>Profil Utilisateur</h1>
+            <p>Gestion intelligente agricole et analyse IA</p>
+        </div>
+    </div>
+
+    <!-- PROFILE HERO -->
+
+    <div class="profile-hero">
+
+        <div class="profile-content">
+
+            <div class="avatar">
+                DR
+            </div>
+
+            <div class="profile-info">
+
+                <h2>Delphine Rakotoarisoa</h2>
+
+                <p>Data Scientist • Agriculture Intelligente • Madagascar</p>
+
+                <div class="badges">
+                    <div class="badge">🌾 Smart Farmer</div>
+                    <div class="badge">📍 Fianarantsoa</div>
+                    <div class="badge">☀️ 25°C</div>
+                    <div class="badge">🧠 AI Score 94%</div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- STATS -->
+
+    <div class="stats">
+
+        <div class="card">
+            <div class="card-title">Parcelles</div>
+            <div class="card-value">12</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Prédictions IA</div>
+            <div class="card-value">58</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Rendement moyen</div>
+            <div class="card-value">7.2</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Précision IA</div>
+            <div class="card-value">94%</div>
+        </div>
+
+    </div>
+
+    <!-- GRID -->
+
+    <div class="grid">
+
+        <!-- CHART -->
+
+        <div class="panel">
+
+            <h3>📈 Évolution des Rendements</h3>
+
+            <canvas id="chart"></canvas>
+
+        </div>
+
+        <!-- ACTIVITIES -->
+
+        <div class="panel">
+
+            <h3>⚡ Activités Récentes</h3>
+
+            <div class="timeline">
+
+                <div class="timeline-item">
+                    <div class="dot"></div>
+                    <div>
+                        <h4>Nouvelle prédiction IA</h4>
+                        <p>Rendement estimé : 6.8 t/ha</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="dot"></div>
+                    <div>
+                        <h4>Nouvelle parcelle ajoutée</h4>
+                        <p>Parcelle Sud enregistrée</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="dot"></div>
+                    <div>
+                        <h4>Analyse météo synchronisée</h4>
+                        <p>Données agricoles mises à jour</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="dot"></div>
+                    <div>
+                        <h4>IA connectée</h4>
+                        <p>Modèle agricole opérationnel</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- SETTINGS -->
+
+    <div class="settings">
+
+        <div class="setting-card">
+
+            <h4>👤 Compte</h4>
+
+            <div class="setting-item">
+                <span>Email</span>
+                <strong>delphine@gmail.com</strong>
+            </div>
+
+            <div class="setting-item">
+                <span>Téléphone</span>
+                <strong>034 98 012 20</strong>
+            </div>
+
+            <div class="setting-item">
+                <span>Région</span>
+                <strong>Fianarantsoa</strong>
+            </div>
+
+        </div>
+
+        <div class="setting-card">
+
+            <h4>🧠 Intelligence Artificielle</h4>
+
+            <div class="setting-item">
+                <span>Modèle IA</span>
+                <strong>AgriAI v2.0</strong>
+            </div>
+
+            <div class="setting-item">
+                <span>Précision</span>
+                <strong>94%</strong>
+            </div>
+
+            <div class="setting-item">
+                <span>Statut</span>
+                <strong style="color:#16a34a;">Online</strong>
+            </div>
+
+        </div>
+
+        <div class="setting-card">
+
+            <h4>🔔 Notifications</h4>
+
+            <div class="setting-item">
+                <span>Alertes météo</span>
+                <strong>Activé</strong>
+            </div>
+
+            <div class="setting-item">
+                <span>Prédictions IA</span>
+                <strong>Activé</strong>
+            </div>
+
+            <div class="setting-item">
+                <span>Rapports SMS</span>
+                <strong>Activé</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
+
+    <div class="footer">
+        © 2026 AgriSmart • AI for African Agriculture • Hackathon FOCAC
+    </div>
+
+</div>
+
+<script>
+
+const ctx = document.getElementById('chart');
+
+new Chart(ctx,{
+
+    type:'line',
+
+    data:{
+        labels:['Jan','Fev','Mars','Avr','Mai','Juin'],
+
+        datasets:[{
+            label:'Rendement t/ha',
+            data:[4,6,5,8,7,9],
+            borderColor:'#16a34a',
+            backgroundColor:'rgba(22,163,74,0.2)',
+            tension:0.4,
+            fill:true
+        }]
+    },
+
+    options:{
+        responsive:true,
+        plugins:{
+            legend:{
+                display:true
+            }
+        }
+    }
+
+});
+
+</script>
+
+</body>
+</html>

@@ -37,6 +37,8 @@ const LoginScreen = ({ navigation }) => {
     try {
       const response = await authService.login(email, password);
       await AsyncStorage.setItem('token', response.data.token);
+      const saved = await AsyncStorage.getItem('token');
+      console.log('✅ Token sauvegardé :', saved);
       Alert.alert('Succès', 'Connexion réussie');
       navigation.replace('Home');
     } catch (error) {

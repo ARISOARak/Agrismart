@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriSmart | Dashboard Agriculture de Précision</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8edf2 100%);
+            min-height: 100vh;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Login Container */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0d5e12 0%, #2e7d32 50%, #1b5e20 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            animation: pulse 10s ease-in-out infinite;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.98);
+            padding: 45px;
+            border-radius: 30px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            width: 420px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            animation: fadeInUp 0.6s ease-out;
+            transition: transform 0.3s;
+        }
+
+        .login-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .logo {
+            font-size: 4.5em;
+            margin-bottom: 10px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .login-card h1 {
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .login-card p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 14px 18px;
+            margin: 10px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: #2e7d32;
+            box-shadow: 0 0 0 3px rgba(46,125,50,0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .login-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(46,125,50,0.3);
+        }
+
+        .error-msg {
+            color: #d32f2f;
+            margin-top: 15px;
+            font-size: 14px;
+            background: #ffebee;
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        /* Dashboard Container */
+        .dashboard-container {
+            padding: 20px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 25px 35px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            transition: all 0.3s;
+        }
+
+        .header:hover {
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: #666;
+            margin-top: 5px;
+            font-size: 0.9em;
+        }
+
+        .badge-header {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            color: white;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,152,0,0.3);
+        }
+
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 28px;
+            border-radius: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        }
+
+        .stat-icon {
+            font-size: 2.5em;
+            margin-bottom: 12px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 2.8em;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 10px 0;
+        }
+
+        .stat-unit {
+            color: #999;
+            font-size: 0.8em;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            background: white;
+            padding: 25px;
+            border-radius: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+
+        .chart-container:hover {
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+
+        .chart-container h3 {
+            margin-bottom: 20px;
+            color: #333;
+            padding-bottom: 12px;
+            border-bottom: 3px solid #2e7d32;
+            display: inline-block;
+            font-weight: 600;
+        }
+
+        canvas {
+            max-height: 400px;
+            width: 100% !important;
+        }
+
+        /* Table Container */
+        .table-container {
+            background: white;
+            padding: 25px;
+            border-radius: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow-x: auto;
+            transition: all 0.3s;
+        }
+
+        .table-container:hover {
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+
+        .table-container h3 {
+            margin-bottom: 20px;
+            color: #333;
+            padding-bottom: 12px;
+            border-bottom: 3px solid #2e7d32;
+            display: inline-block;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th {
+            background: linear-gradient(135deg, #2e7d32, #1b5e20);
+            color: white;
+            padding: 15px;
+            font-weight: 600;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tr {
+            transition: all 0.3s;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+            transform: scale(1.01);
+        }
+
+        .badge {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            color: #2e7d32;
+            padding: 5px 14px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.85em;
+            display: inline-block;
+        }
+
+        .rendement-value {
+            font-weight: 800;
+            color: #2e7d32;
+            font-size: 1.1em;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 25px;
+            color: #888;
+            font-size: 0.8em;
+            margin-top: 30px;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            .stat-value {
+                font-size: 2em;
+            }
+            .login-card {
+                width: 90%;
+                padding: 30px;
+            }
+            th, td {
+                font-size: 12px;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Login Page -->
+<div id="loginPage" class="login-container">
+    <div class="login-card">
+        <div class="logo">🌾</div>
+        <h1>AgriSmart</h1>
+        <p style="font-size: 0.9em; color: #888;">Plateforme d'agriculture de précision</p>
+        <p style="font-size: 0.8em; color: #aaa; margin-top: -20px;">🤖 AI-Powered</p>
+        <input type="email" id="email" class="login-input" placeholder="📧 Email" value="jean@agrismart.com">
+        <input type="password" id="password" class="login-input" placeholder="🔒 Mot de passe" value="123456">
+        <button class="login-btn" onclick="login()">
+            <i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i>
+            Se connecter
+        </button>
+        <div id="errorMsg" class="error-msg"></div>
+    </div>
+</div>
+
+<!-- Dashboard Page -->
+<div id="dashboardPage" style="display: none;">
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <h1>
+                    🌾 AgriSmart Dashboard 
+                    <span class="badge-header">AI-Powered</span>
+                </h1>
+                <p>🤖 Intelligence Artificielle pour l'agriculture malgache | Hackathon FOCAC 2026</p>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt" style="margin-right: 8px;"></i>
+                Déconnexion
+            </button>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-container" id="statsContainer">
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-label">Total prédictions</div>
+                <div class="stat-value" id="totalValue">-</div>
+                <div class="stat-unit">prédictions enregistrées</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <div class="stat-label">Rendement moyen</div>
+                <div class="stat-value" id="avgValue">-</div>
+                <div class="stat-unit">tonnes par hectare</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-label">Rendement maximum</div>
+                <div class="stat-value" id="maxValue">-</div>
+                <div class="stat-unit">tonnes par hectare</div>
+            </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="chart-container">
+            <h3><i class="fas fa-chart-bar" style="margin-right: 10px; color: #2e7d32;"></i>Évolution des rendements par parcelle</h3>
+            <canvas id="rendementChart"></canvas>
+        </div>
+
+        <!-- Table -->
+        <div class="table-container">
+            <h3><i class="fas fa-table" style="margin-right: 10px; color: #2e7d32;"></i>Historique détaillé des prédictions</h3>
+            <div id="tableContent">
+                <div class="loading">
+                    <i class="fas fa-spinner fa-spin"></i> Chargement des données...
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© 2026 AgriSmart | Hackathon FOCAC - 70ème anniversaire des relations Sino-Africaines</p>
+            <p style="margin-top: 5px;">🌍 L'IA crée l'avenir, la Chine et l'Afrique s'engagent ensemble</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    let authToken = null;
+    let chart = null;
+
+    async function login() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const errorMsg = document.getElementById('errorMsg');
+        
+        errorMsg.textContent = '🔄 Connexion en cours...';
+        
+        try {
+            const response = await fetch('http://192.168.1.248:3000/api/users/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                authToken = data.token;
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('dashboardPage').style.display = 'block';
+                loadDashboardData();
+            } else {
+                errorMsg.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ' + (data.message || 'Email ou mot de passe incorrect');
+            }
+        } catch (error) {
+            errorMsg.innerHTML = '<i class="fas fa-wifi"></i> Erreur de connexion au serveur';
+            console.error('Login error:', error);
+        }
+    }
+
+    async function loadDashboardData() {
+        if (!authToken) return;
+        
+        try {
+            const response = await fetch('http://192.168.1.248:3000/api/predictions/history', {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            });
+            
+            const data = await response.json();
+            const predictions = data.predictions || [];
+            
+            updateStats(predictions);
+            updateChart(predictions);
+            updateTable(predictions);
+            
+        } catch (error) {
+            console.error('Error loading data:', error);
+            document.getElementById('tableContent').innerHTML = '<div class="loading" style="color: #d32f2f;"><i class="fas fa-exclamation-circle"></i> Erreur de chargement des données</div>';
+        }
+    }
+
+    function updateStats(predictions) {
+        const total = predictions.length;
+        let sum = 0, max = 0;
+        
+        predictions.forEach(p => {
+            const rend = parseFloat(p.rendement_prevu) || 0;
+            sum += rend;
+            if (rend > max) max = rend;
+        });
+        
+        const avg = total > 0 ? (sum / total).toFixed(1) : 0;
+        
+        // Animation des compteurs
+        animateValue('totalValue', 0, total, 500);
+        animateValue('avgValue', 0, parseFloat(avg), 500);
+        animateValue('maxValue', 0, parseFloat(max), 500);
+    }
+
+    function animateValue(elementId, start, end, duration) {
+        const element = document.getElementById(elementId);
+        if (!element) return;
+        const range = end - start;
+        const increment = range / (duration / 10);
+        let current = start;
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= end) {
+                element.textContent = end.toFixed(1);
+                clearInterval(timer);
+            } else {
+                element.textContent = current.toFixed(1);
+            }
+        }, 10);
+    }
+
+    function updateChart(predictions) {
+        const ctx = document.getElementById('rendementChart').getContext('2d');
+        
+        if (chart) {
+            chart.destroy();
+        }
+        
+        const labels = predictions.map((_, i) => `Parcelle ${i + 1}`);
+        const data = predictions.map(p => parseFloat(p.rendement_prevu) || 0);
+        const colors = data.map((_, i) => {
+            const opacity = 0.5 + (i * 0.1);
+            return `rgba(46, 125, 50, ${Math.min(opacity, 0.9)})`;
+        });
+        
+        chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Rendement (tonnes/ha)',
+                    data: data,
+                    backgroundColor: colors,
+                    borderColor: '#2e7d32',
+                    borderWidth: 2,
+                    borderRadius: 8,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            font: { size: 12, weight: 'bold' },
+                            usePointStyle: true,
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `🌾 Rendement: ${context.raw} tonnes/ha`;
+                            }
+                        },
+                        backgroundColor: '#2e7d32',
+                        titleColor: 'white',
+                        bodyColor: 'white',
+                        padding: 10,
+                        cornerRadius: 8
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Tonnes par hectare',
+                            font: { weight: 'bold', size: 12 }
+                        },
+                        grid: {
+                            color: '#e0e0e0'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Parcelles',
+                            font: { weight: 'bold', size: 12 }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    function updateTable(predictions) {
+        if (!predictions.length) {
+            document.getElementById('tableContent').innerHTML = '<div class="loading"><i class="fas fa-database"></i> Aucune prédiction pour le moment</div>';
+            return;
+        }
+        
+        let html = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>📅 Date</th>
+                        <th>🌱 Culture</th>
+                        <th>📏 Surface (ha)</th>
+                        <th>💧 Pluie (mm)</th>
+                        <th>🌡️ Température (°C)</th>
+                        <th>🏆 Rendement (t/ha)</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        const sorted = [...predictions].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        
+        sorted.forEach(p => {
+            const date = new Date(p.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            html += `
+                <tr>
+                    <td>${date}</td>
+                    <td><span class="badge">${p.culture_type || 'Non spécifié'}</span></td>
+                    <td>${parseFloat(p.surface_ha || 0).toFixed(1)} ha</td>
+                    <td>${parseFloat(p.pluie_mm || 0).toFixed(0)} mm</td>
+                    <td>${parseFloat(p.temperature_c || 0).toFixed(1)} °C</td>
+                    <td class="rendement-value">${parseFloat(p.rendement_prevu || 0).toFixed(1)} t/ha</td>
+                </tr>
+            `;
+        });
+        
+        html += '</tbody></table>';
+        document.getElementById('tableContent').innerHTML = html;
+    }
+
+    function logout() {
+        authToken = null;
+        document.getElementById('loginPage').style.display = 'flex';
+        document.getElementById('dashboardPage').style.display = 'none';
+        if (chart) {
+            chart.destroy();
+            chart = null;
+        }
+    }
+
+    // Rafraîchissement automatique toutes les 30 secondes
+    setInterval(() => {
+        if (authToken) {
+            loadDashboardData();
+        }
+    }, 30000);
+</script>
+</body>
+</html>
