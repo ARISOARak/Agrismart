@@ -1,1 +1,0 @@
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImZhcm1lciIsImlhdCI6MTc3NDUxODIzOSwiZXhwIjoxNzc0NjA0NjM5fQ.oJknVbuZHLSxkJm0MHwahdlPZ_e2eVGTCmXGWiPHfXA"
