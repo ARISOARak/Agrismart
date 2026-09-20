@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content="AgriSmart — Plateforme intelligente de gestion, prévision et commercialisation des cultures agricoles à Madagascar."/>
+<meta name="theme-color" content="#0d1a0e"/>
 <title>AgriSmart Fandriana</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230d1a0e'/%3E%3Cpath d='M32 46c-12 0-20-8-20-18 0-5 2-9 6-11 4 2 6 3 8 3 2 0 4-1 8-3 4 2 6 6 6 11 0 10-8 18-8 18Z' fill='%237ddb5e'/%3E%3Cpath d='M32 46V20' stroke='%231e8f3e' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E"/>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
@@ -46,9 +49,24 @@ body {
   min-height:100vh;
   -webkit-font-smoothing:antialiased;
 }
-h1,h2,h3,h4,.brand-big,.kpi-value,.page-title,.sidebar-brand .name {
+h1,h2,h3,h4,.brand-big,.kpi-value,.page-title,.sidebar-brand .name,.live-time {
   font-family:'Playfair Display', serif;
 }
+button { -webkit-tap-highlight-color:transparent; }
+
+/* ─ Icons (sprite) ─ */
+.ic {
+  width:1.15em; height:1.15em;
+  display:inline-block;
+  vertical-align:-0.22em;
+  stroke:currentColor;
+  fill:none;
+  stroke-width:2;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  flex-shrink:0;
+}
+.ic-lg { width:24px; height:24px; }
 
 /* ─ Scrollbar ─ */
 ::-webkit-scrollbar { width:5px; }
@@ -68,7 +86,6 @@ h1,h2,h3,h4,.brand-big,.kpi-value,.page-title,.sidebar-brand .name {
   position:relative;
 }
 
-/* Animated background blobs */
 #loginPage::before {
   content:'';
   position:absolute; inset:0;
@@ -83,7 +100,6 @@ h1,h2,h3,h4,.brand-big,.kpi-value,.page-title,.sidebar-brand .name {
   to   { transform: scale(1.08) rotate(3deg); }
 }
 
-/* Grid texture overlay */
 #loginPage::after {
   content:'';
   position:absolute; inset:0;
@@ -169,7 +185,7 @@ h1,h2,h3,h4,.brand-big,.kpi-value,.page-title,.sidebar-brand .name {
   font-size:14px;
   line-height:1.75;
   margin-top:16px;
-  max-width:300px;
+  max-width:310px;
   font-weight:300;
 }
 
@@ -189,7 +205,9 @@ h1,h2,h3,h4,.brand-big,.kpi-value,.page-title,.sidebar-brand .name {
   gap:14px;
 }
 .stat-pill:hover { background:rgba(255,255,255,.1); transform:translateX(6px); }
-.stat-pill-icon { font-size:20px; }
+.stat-pill-icon { width:22px; height:22px; color:var(--sprout); flex-shrink:0; }
+.stat-pill:nth-child(2) .stat-pill-icon { color:var(--gold); }
+.stat-pill:nth-child(3) .stat-pill-icon { color:#5fa8ff; }
 .stat-pill-body strong {
   font-size:22px;
   font-family:'Playfair Display',serif;
@@ -200,7 +218,6 @@ h1,h2,h3,h4,.brand-big,.kpi-value,.page-title,.sidebar-brand .name {
 }
 .stat-pill-body small { font-size:11px; opacity:.6; }
 
-/* Login right */
 .login-right {
   background:#fff;
   padding:56px 52px;
@@ -268,22 +285,28 @@ h1,h2,h3,h4,.brand-big,.kpi-value,.page-title,.sidebar-brand .name {
 }
 .btn-login:hover { transform:translateY(-2px); box-shadow:0 12px 32px rgba(30,143,62,.4); }
 .btn-login:active { transform:translateY(0); }
+.btn-login:disabled { opacity:.7; cursor:wait; transform:none; }
 .btn-arrow {
   width:24px; height:24px;
   background:rgba(255,255,255,.2);
   border-radius:50%;
   display:flex; align-items:center; justify-content:center;
-  font-size:12px;
 }
+.btn-arrow .ic { width:14px; height:14px; }
 
 .hint-box {
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
   background:var(--mist);
   border:1px solid var(--fog);
   border-radius:12px;
   padding:12px 16px;
   font-size:13px;
   color:var(--mid);
+  line-height:1.6;
 }
+.hint-box .ic { color:var(--gold-warm); margin-top:2px; width:16px; height:16px; }
 .err { color:var(--danger); font-size:13px; min-height:18px; font-weight:600; }
 
 @media(max-width:720px) {
@@ -297,6 +320,34 @@ h1,h2,h3,h4,.brand-big,.kpi-value,.page-title,.sidebar-brand .name {
 ══════════════════════════════ */
 #app { display:none; min-height:100vh; }
 .layout { display:flex; min-height:100vh; }
+
+/* ─ Topbar (mobile) ─ */
+.menu-toggle {
+  position:fixed;
+  top:14px; left:14px;
+  z-index:260;
+  width:44px; height:44px;
+  border-radius:14px;
+  background:var(--soil);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.12);
+  cursor:pointer;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 6px 20px rgba(0,0,0,.3);
+}
+.menu-toggle .ic { width:20px; height:20px; }
+.sidebar-backdrop {
+  position:fixed; inset:0;
+  background:rgba(0,0,0,.45);
+  backdrop-filter:blur(3px);
+  z-index:190;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity var(--transition);
+}
+.sidebar-backdrop.show { opacity:1; pointer-events:auto; }
 
 /* ─ Sidebar ─ */
 .sidebar {
@@ -328,9 +379,9 @@ h1,h2,h3,h4,.brand-big,.kpi-value,.page-title,.sidebar-brand .name {
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:22px;
   box-shadow:0 4px 14px rgba(30,143,62,.4);
 }
+.brand-icon .ic { width:24px; height:24px; color:#fff; stroke-width:1.7; }
 .sidebar-brand .name {
   font-size:18px;
   font-weight:900;
@@ -385,7 +436,7 @@ h1,h2,h3,h4,.brand-big,.kpi-value,.page-title,.sidebar-brand .name {
   background:var(--sprout);
   border-radius:0 3px 3px 0;
 }
-.nav-item .ni { font-size:16px; width:22px; text-align:center; flex-shrink:0; }
+.nav-item .ni .ic { width:18px; height:18px; display:block; }
 .nav-badge {
   margin-left:auto;
   background:var(--gold);
@@ -444,6 +495,7 @@ h1,h2,h3,h4,.brand-big,.kpi-value,.page-title,.sidebar-brand .name {
   justify-content:center;
   gap:6px;
 }
+.btn-logout .ic { width:15px; height:15px; }
 .btn-logout:hover { background:rgba(214,48,49,.22); color:#ff8a80; }
 
 /* ─ Main ─ */
@@ -476,6 +528,7 @@ h1,h2,h3,h4,.brand-big,.kpi-value,.page-title,.sidebar-brand .name {
   letter-spacing:-.5px;
 }
 .page-sub { font-size:14px; color:var(--mid); margin-top:5px; font-weight:400; }
+.header-right { display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
 .status-badge {
   display:flex;
   align-items:center;
@@ -499,6 +552,27 @@ h1,h2,h3,h4,.brand-big,.kpi-value,.page-title,.sidebar-brand .name {
   0%,100% { opacity:1; box-shadow:0 0 0 0 rgba(125,219,94,.5); }
   50%      { opacity:.8; box-shadow:0 0 0 6px rgba(125,219,94,0); }
 }
+.live-wrap {
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:4px;
+  background:#fff;
+  border:1px solid var(--fog);
+  border-radius:16px;
+  padding:10px 20px;
+  box-shadow:var(--shadow);
+}
+.live-time {
+  font-size:22px;
+  font-weight:800;
+  color:var(--ink);
+  font-variant-numeric:tabular-nums;
+  letter-spacing:.5px;
+}
+.live-time .colon { animation:blink 1s step-start infinite; }
+@keyframes blink { 50% { opacity:.15; } }
+.live-date { font-size:12px; color:var(--mid); font-weight:500; }
 
 /* ─ Pages ─ */
 .page { display:none; }
@@ -557,8 +631,12 @@ h1,h2,h3,h4,.brand-big,.kpi-value,.page-title,.sidebar-brand .name {
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:18px;
+  color:var(--leaf);
 }
+.kpi-icon-wrap .ic { width:20px; height:20px; }
+.kpi-icon-wrap.gold { background:#fff8e1; color:var(--gold-warm); }
+.kpi-icon-wrap.blue { background:#e3f2fd; color:var(--info); }
+.kpi-icon-wrap.red  { background:#fde8e8; color:var(--danger); }
 .kpi-value {
   font-size:38px;
   font-weight:900;
@@ -579,6 +657,7 @@ h1,h2,h3,h4,.brand-big,.kpi-value,.page-title,.sidebar-brand .name {
   margin-top:6px;
   font-family:'Plus Jakarta Sans',sans-serif;
 }
+.kpi-trend .ic { width:12px; height:12px; }
 .trend-up   { background:#e8f5e9; color:#1e8f3e; }
 .trend-down { background:#fde8e8; color:var(--danger); }
 
@@ -608,6 +687,30 @@ h1,h2,h3,h4,.brand-big,.kpi-value,.page-title,.sidebar-brand .name {
   border-radius:3px;
   flex-shrink:0;
 }
+.card-head-row {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.btn-ghost {
+  background:var(--mist);
+  color:var(--mid);
+  border:1px solid var(--fog);
+  border-radius:10px;
+  padding:8px 14px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+  transition:var(--transition);
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+.btn-ghost .ic { width:14px; height:14px; }
+.btn-ghost:hover { background:var(--fog); color:var(--ink); }
 
 /* ─ Charts row ─ */
 .charts-row {
@@ -617,6 +720,26 @@ h1,h2,h3,h4,.brand-big,.kpi-value,.page-title,.sidebar-brand .name {
   margin-bottom:26px;
 }
 @media(max-width:900px) { .charts-row { grid-template-columns:1fr; } }
+
+.fallback-chart { display:flex; flex-direction:column; gap:14px; }
+.fallback-bar-row { display:flex; align-items:center; gap:12px; }
+.fallback-bar-label { width:110px; font-size:12px; color:var(--mid); font-weight:600; flex-shrink:0; }
+.fallback-bar-track { flex:1; background:var(--mist); border-radius:20px; height:22px; overflow:hidden; }
+.fallback-bar-fill {
+  height:100%;
+  background:var(--grad-green);
+  border-radius:20px;
+  min-width:2%;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  padding-right:10px;
+  color:#fff;
+  font-size:11px;
+  font-weight:700;
+  transition:width .8s cubic-bezier(.4,0,.2,1);
+}
+.fallback-empty { color:var(--faint); font-size:13px; padding:20px 0; text-align:center; }
 
 /* ─ Activity list ─ */
 .activity-list { display:flex; flex-direction:column; gap:6px; }
@@ -629,13 +752,7 @@ h1,h2,h3,h4,.brand-big,.kpi-value,.page-title,.sidebar-brand .name {
   transition:background var(--transition);
 }
 .activity-item:hover { background:var(--mist); }
-.activity-dot {
-  width:8px; height:8px;
-  border-radius:50%;
-  background:var(--leaf-light);
-  margin-top:6px;
-  flex-shrink:0;
-}
+.activity-item .ic { width:14px; height:14px; color:var(--leaf-light); margin-top:4px; }
 .ac-title { font-size:13px; font-weight:600; color:var(--ink); }
 .ac-time  { font-size:12px; color:var(--faint); margin-top:3px; }
 
@@ -653,6 +770,7 @@ thead th {
   font-weight:600;
   background:var(--mist);
   font-family:'Plus Jakarta Sans',sans-serif;
+  white-space:nowrap;
 }
 thead th:first-child { border-radius:12px 0 0 0; }
 thead th:last-child  { border-radius:0 12px 0 0; }
@@ -669,18 +787,33 @@ tbody tr:hover { background:#f7faf5; }
   font-size:11px;
   font-weight:700;
   letter-spacing:.3px;
+  white-space:nowrap;
 }
+.badge .ic { width:12px; height:12px; }
 .badge-green { background:#e0f5e5; color:#1e8f3e; }
 .badge-gold  { background:#fff8e1; color:#c17d00; }
 .badge-blue  { background:#e3f2fd; color:#1565c0; }
+.badge-red   { background:#fde8e8; color:var(--danger); }
 .rendement-val {
   font-family:'Playfair Display',serif;
   font-weight:700;
   color:var(--leaf);
   font-size:16px;
 }
-
-/* ─ Prediction ─ */
+.btn-del {
+  background:transparent;
+  border:none;
+  cursor:pointer;
+  color:var(--faint);
+  padding:6px 8px;
+  border-radius:8px;
+  transition:all var(--transition);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+.btn-del .ic { width:15px; height:15px; }
+.btn-del:hover { background:#fde8e8; color:var(--danger); opacity:1; }/* ─ Prediction ─ */
 .pred-layout {
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -709,6 +842,12 @@ tbody tr:hover { background:#f7faf5; }
   transition:border-color var(--transition), box-shadow var(--transition), background var(--transition);
   appearance:none;
 }
+.form-select {
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23627563' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 14px center;
+  padding-right:38px;
+}
 .form-input:focus, .form-select:focus {
   outline:none;
   border-color:var(--leaf);
@@ -734,6 +873,7 @@ tbody tr:hover { background:#f7faf5; }
   gap:8px;
   box-shadow:0 4px 18px rgba(30,143,62,.28);
 }
+.btn-predict .ic { width:18px; height:18px; }
 .btn-predict:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 12px 32px rgba(30,143,62,.38); }
 .btn-predict:disabled { opacity:.5; cursor:not-allowed; }
 
@@ -758,11 +898,8 @@ tbody tr:hover { background:#f7faf5; }
   text-align:center;
   padding:48px 20px;
 }
-.result-empty .big-icon {
-  font-size:64px;
-  opacity:.3;
-  animation:float 4s ease-in-out infinite;
-}
+.result-empty .big-icon { color:var(--leaf); opacity:.3; }
+.result-empty .big-icon .ic { width:64px; height:64px; stroke-width:1.4; animation:float 4s ease-in-out infinite; }
 @keyframes float {
   0%,100% { transform:translateY(0); }
   50%      { transform:translateY(-8px); }
@@ -798,11 +935,11 @@ tbody tr:hover { background:#f7faf5; }
   background:rgba(255,255,255,.06);
 }
 .rendement-big::after {
-  content:'🌾';
-  position:absolute;
-  font-size:90px;
-  right:-5px; bottom:-10px;
-  opacity:.1;
+  content:'';
+  position:absolute; right:-14px; bottom:-14px;
+  width:150px; height:150px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 50c-8-8-12-16-4-24 8-8 14-6 16-10-1 9-3 18-12 34Z' fill='white'/%3E%3C/svg%3E") center/contain no-repeat;
+  opacity:.08;
 }
 .rendement-big .label {
   font-size:11px;
@@ -821,6 +958,19 @@ tbody tr:hover { background:#f7faf5; }
   text-shadow:0 2px 20px rgba(0,0,0,.2);
 }
 .rendement-big .unit { font-size:15px; opacity:.75; margin-top:6px; }
+.rendement-sub {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+.sub-chip {
+  background:var(--mist);
+  border-radius:12px;
+  padding:14px 16px;
+  text-align:center;
+}
+.sub-chip .v { font-family:'Playfair Display',serif; font-size:22px; font-weight:800; color:var(--leaf); }
+.sub-chip .l { font-size:11px; color:var(--mid); margin-top:2px; }
 
 .confidence-bar {
   background:var(--mist);
@@ -854,21 +1004,62 @@ tbody tr:hover { background:#f7faf5; }
   text-align:center;
   color:var(--mid);
 }
-.spinner {
-  width:44px; height:44px;
-  border:3px solid var(--fog);
-  border-top-color:var(--leaf);
-  border-radius:50%;
-  animation:spin .8s linear infinite;
-}
+.loading-ai .ic { width:46px; height:46px; color:var(--leaf); animation:spin 1.6s linear infinite; }
+.spinner { display:none; }
 @keyframes spin { to { transform:rotate(360deg); } }
 
 /* ─ Market ─ */
+.market-toolbar {
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+  align-items:center;
+  margin-bottom:20px;
+}
+.search-box {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:#fff;
+  border:1.5px solid var(--fog);
+  border-radius:12px;
+  padding:10px 16px;
+  flex:1;
+  min-width:220px;
+  color:var(--faint);
+  transition:border-color var(--transition), box-shadow var(--transition);
+}
+.search-box:focus-within { border-color:var(--leaf); box-shadow:0 0 0 3px rgba(30,143,62,.1); }
+.search-box .ic { width:16px; height:16px; }
+.search-box input {
+  border:none; outline:none; background:transparent;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:14px; color:var(--ink); flex:1; width:100%;
+}
+.filter-chips { display:flex; gap:8px; flex-wrap:wrap; }
+.chip {
+  background:#fff;
+  border:1px solid var(--fog);
+  border-radius:30px;
+  padding:8px 16px;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+  color:var(--mid);
+  transition:all var(--transition);
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+}
+.chip .ic { width:14px; height:14px; }
+.chip.active { border-color:transparent; background:var(--grad-green); color:#fff; box-shadow:0 3px 12px rgba(30,143,62,.25); }
+.chip.active .ic { color:#fff; }
+.chip:hover { border-color:var(--leaf); color:var(--leaf); }
+
 .market-grid {
   display:grid;
   grid-template-columns:repeat(auto-fill, minmax(290px, 1fr));
   gap:18px;
-  margin-top:22px;
 }
 .market-card {
   background:#fff;
@@ -895,8 +1086,10 @@ tbody tr:hover { background:#f7faf5; }
   align-items:flex-start;
   margin-bottom:16px;
 }
-.mc-culture { font-family:'Playfair Display',serif; font-size:18px; font-weight:700; color:var(--ink); }
-.mc-farmer  { font-size:12px; color:var(--mid); margin-top:3px; }
+.mc-culture { display:flex; align-items:center; gap:8px; font-family:'Playfair Display',serif; font-size:18px; font-weight:700; color:var(--ink); }
+.mc-culture .ic { width:20px; height:20px; color:var(--leaf); }
+.mc-farmer { font-size:12px; color:var(--mid); margin-top:3px; display:flex; align-items:center; gap:5px; }
+.mc-farmer .ic { width:12px; height:12px; color:var(--faint); }
 .mc-price   { font-family:'Playfair Display',serif; font-size:24px; font-weight:900; color:var(--leaf); text-align:right; }
 .mc-price-unit { font-size:11px; color:var(--faint); text-align:right; }
 .mc-details { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
@@ -907,7 +1100,11 @@ tbody tr:hover { background:#f7faf5; }
   font-size:12px;
   color:var(--mid);
   font-weight:500;
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
 }
+.mc-tag .ic { width:12px; height:12px; color:var(--faint); }
 .mc-footer  { display:flex; justify-content:space-between; align-items:center; }
 .btn-contact {
   background:var(--grad-green);
@@ -921,9 +1118,14 @@ tbody tr:hover { background:#f7faf5; }
   font-family:'Plus Jakarta Sans',sans-serif;
   transition:all var(--transition);
   box-shadow:0 3px 12px rgba(30,143,62,.25);
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
 }
+.btn-contact .ic { width:14px; height:14px; }
 .btn-contact:hover { transform:translateY(-1px); box-shadow:0 6px 18px rgba(30,143,62,.35); }
-.mc-date { font-size:11px; color:var(--faint); }
+.mc-date { font-size:11px; color:var(--faint); display:inline-flex; align-items:center; gap:4px; }
+.mc-date .ic { width:11px; height:11px; }
 
 .btn-add {
   background:var(--grad-gold);
@@ -938,10 +1140,24 @@ tbody tr:hover { background:#f7faf5; }
   transition:all var(--transition);
   display:flex;
   align-items:center;
-  gap:6px;
+  gap:8px;
   box-shadow:0 4px 16px rgba(240,192,64,.35);
 }
+.btn-add .ic { width:16px; height:16px; }
 .btn-add:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(240,192,64,.45); }
+
+.empty-state {
+  grid-column:1/-1;
+  text-align:center;
+  padding:56px 20px;
+  color:var(--mid);
+  background:#fff;
+  border:1px dashed var(--fog);
+  border-radius:var(--radius);
+}
+.empty-state .es-icon .ic { width:52px; height:52px; color:var(--faint); stroke-width:1.4; }
+.empty-state .es-title { font-weight:700; font-size:16px; color:var(--ink); margin-top:12px; }
+.empty-state .es-sub { font-size:13px; color:var(--faint); margin-top:4px; }
 
 /* ─ Modal ─ */
 .modal-overlay {
@@ -953,6 +1169,7 @@ tbody tr:hover { background:#f7faf5; }
   align-items:center;
   justify-content:center;
   backdrop-filter:blur(8px);
+  padding:16px;
 }
 .modal-overlay.open { display:flex; }
 .modal {
@@ -960,13 +1177,14 @@ tbody tr:hover { background:#f7faf5; }
   border-radius:26px;
   padding:40px;
   width:540px;
-  max-width:95vw;
+  max-width:100%;
   box-shadow:0 40px 100px rgba(0,0,0,.3);
   max-height:90vh;
   overflow-y:auto;
   animation:modalIn .32s cubic-bezier(.34,1.56,.64,1);
   border:1px solid var(--fog);
 }
+.modal-sm { width:440px; }
 @keyframes modalIn {
   from { opacity:0; transform:scale(.9) translateY(20px); }
   to   { opacity:1; transform:none; }
@@ -976,7 +1194,11 @@ tbody tr:hover { background:#f7faf5; }
   color:var(--ink);
   margin-bottom:24px;
   letter-spacing:-.3px;
+  display:flex;
+  align-items:center;
+  gap:10px;
 }
+.modal h3 .ic { width:22px; height:22px; color:var(--leaf); }
 .modal-footer { display:flex; justify-content:flex-end; gap:10px; margin-top:24px; }
 .btn-cancel {
   background:var(--mist);
@@ -1003,8 +1225,61 @@ tbody tr:hover { background:#f7faf5; }
   cursor:pointer;
   transition:all var(--transition);
   box-shadow:0 4px 16px rgba(30,143,62,.3);
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
 }
+.btn-save .ic { width:16px; height:16px; }
 .btn-save:hover { box-shadow:0 8px 24px rgba(30,143,62,.4); transform:translateY(-1px); }
+.btn-gold {
+  background:var(--grad-gold);
+  color:var(--soil);
+  box-shadow:0 4px 16px rgba(240,192,64,.35);
+}
+.btn-gold:hover { box-shadow:0 8px 24px rgba(240,192,64,.45); }
+
+/* ─ Contact modal ─ */
+.contact-hero {
+  text-align:center;
+  padding:8px 0 12px;
+}
+.contact-hero .ch-emoji .ic { width:52px; height:52px; color:var(--leaf); stroke-width:1.5; }
+.contact-hero .ch-name { font-family:'Playfair Display',serif; font-size:22px; font-weight:800; margin-top:8px; }
+.contact-hero .ch-sub  { font-size:13px; color:var(--mid); margin-top:4px; line-height:1.6; }
+.contact-actions { display:flex; flex-direction:column; gap:12px; margin-top:18px; }
+.btn-call, .btn-wa {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  border:none;
+  border-radius:14px;
+  padding:15px;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
+  text-decoration:none;
+  transition:all var(--transition);
+}
+.btn-call .ic, .btn-wa .ic { width:18px; height:18px; }
+.btn-call { background:var(--grad-green); color:#fff; box-shadow:0 4px 18px rgba(30,143,62,.3); }
+.btn-call:hover { transform:translateY(-2px); }
+.btn-wa { background:#25d366; color:#fff; box-shadow:0 4px 18px rgba(37,211,102,.35); }
+.btn-wa:hover { transform:translateY(-2px); }
+.copy-row {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:var(--mist);
+  border-radius:10px;
+  padding:10px 14px;
+  font-size:14px;
+  font-weight:600;
+  color:var(--ink);
+}
+.copy-row .ic { width:15px; height:15px; color:var(--mid); }
+.copy-row code { flex:1; font-family:'Plus Jakarta Sans',sans-serif; overflow:hidden; text-overflow:ellipsis; }
 
 /* ─ Weather ─ */
 .weather-row {
@@ -1021,8 +1296,10 @@ tbody tr:hover { background:#f7faf5; }
   text-align:center;
   transition:transform var(--transition);
   border:1px solid var(--mist);
+  cursor:default;
 }
 .weather-card:hover { transform:translateY(-3px); }
+.weather-card.warn { border:1px solid rgba(245,166,35,.45); background:#fffbec; }
 .weather-card.today {
   background:var(--grad-green);
   border:none;
@@ -1032,10 +1309,14 @@ tbody tr:hover { background:#f7faf5; }
 .weather-card.today .wday,
 .weather-card.today .wrain { color:rgba(255,255,255,.7); }
 .weather-card.today .wtemp { color:#fff; }
+.weather-card.today .wicon .ic { color:#fff; }
 .wday  { font-size:11px; color:var(--mid); margin-bottom:10px; font-weight:600; text-transform:uppercase; letter-spacing:.8px; }
-.wicon { font-size:34px; margin-bottom:10px; }
+.wicon { margin-bottom:10px; }
+.wicon .ic { width:38px; height:38px; color:var(--gold-warm); stroke-width:1.7; }
+.weather-card.warn .wicon .ic { color:var(--gold-warm); }
 .wtemp { font-family:'Playfair Display',serif; font-size:26px; font-weight:700; color:var(--ink); }
-.wrain { font-size:12px; color:var(--info); margin-top:6px; font-weight:500; }
+.wrain { font-size:12px; color:var(--info); margin-top:6px; font-weight:500; display:inline-flex; align-items:center; gap:4px; }
+.wrain .ic { width:12px; height:12px; }
 
 .section-title {
   font-family:'Plus Jakarta Sans',sans-serif;
@@ -1062,22 +1343,106 @@ tbody tr:hover { background:#f7faf5; }
 }
 .alert-card.warn { background:#fffbec; border:1px solid rgba(245,166,35,.3); }
 .alert-card.ok   { background:#edf7ee; border:1px solid rgba(30,143,62,.25); }
-.alert-card .aicon { font-size:28px; flex-shrink:0; }
+.alert-card.info { background:#eef6fd; border:1px solid rgba(9,132,227,.2); }
+.alert-card .aicon { flex-shrink:0; }
+.alert-card .aicon .ic { width:26px; height:26px; }
+.alert-card.warn .aicon { color:var(--gold-warm); }
+.alert-card.ok   .aicon { color:var(--leaf); }
+.alert-card.info .aicon { color:var(--info); }
 .alert-card .atitle { font-weight:700; font-size:14px; margin-bottom:5px; }
 .alert-card .atext  { font-size:13px; color:var(--mid); line-height:1.6; }
 
+/* ─ Toasts ─ */
+#toastWrap {
+  position:fixed;
+  bottom:22px; right:22px;
+  z-index:1200;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  max-width:min(360px,90vw);
+}
+.toast {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:#fff;
+  border-radius:14px;
+  padding:14px 18px;
+  font-size:14px;
+  font-weight:600;
+  box-shadow:var(--shadow-lg);
+  border:1px solid var(--fog);
+  animation:toastIn .3s cubic-bezier(.34,1.56,.64,1);
+}
+.toast .ic { width:18px; height:18px; }
+.toast.out { animation:toastOut .3s ease forwards; }
+@keyframes toastIn  { from{opacity:0; transform:translateX(40px);} to{opacity:1; transform:none;} }
+@keyframes toastOut { to { opacity:0; transform:translateX(40px);} }
+.toast.ok   .ic { color:var(--leaf); }
+.toast.err  .ic { color:var(--danger); }
+.toast.info .ic { color:var(--info); }
+
 /* ─ Responsive ─ */
 @media(max-width:800px) {
-  .sidebar { transform:translateX(-100%); }
-  .sidebar.open { transform:none; }
-  .main { margin-left:0; padding:22px 18px; }
+  .menu-toggle { display:flex; }
+  .sidebar { transform:translateX(-100%); box-shadow:none; }
+  .sidebar.open { transform:none; box-shadow:0 0 60px rgba(0,0,0,.5); }
+  .main { margin-left:0; padding:74px 18px 30px; }
   .charts-row { grid-template-columns:1fr; }
+  .form-row { grid-template-columns:1fr; }
+}
+@media(max-width:500px) {
+  .page-title { font-size:26px; }
+  .card { padding:20px; }
+  .kpi-value { font-size:32px; }
 }
 </style>
 </head>
-<body>
-
-<!-- ══════════ LOGIN ══════════ -->
+<body><svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-dashboard" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="18" rx="1.5"/><rect x="14" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="16" width="7" height="5" rx="1.5"/></symbol>
+  <symbol id="i-brain" viewBox="0 0 24 24"><path d="M9.5 4.5c.6-1 1.8-2 3-1.7 1.4.4 1.5 2 1.6 3.2.1 1 .2 2.8 1.5 3.8.7.5 1.6.5 2.5.2 1.5-.5 2.4 1.7 1.2 2.6-.7.5-1.5.6-2.3.5-1.3-.2-2.6.4-3 1.7a12 12 0 0 1-.9 2.3c-.8 1.6-3.5 2.4-3.4.2.1-1.7-.2-3.4-.5-5.1a1.5 1.5 0 0 0-.8-1.1c-.6-.3-1.3-.1-1.9.1-1.6.7-2.7-.9-2-2.2a2.5 2.5 0 0 1-.5-2.4c.5-1.6 2.7-1.3 3.7-.3.9 1 2.3 1.1 3.4.5l.4-.3Z"/><path d="M6.2 8.6c-.4.9-.9 1.7-1 2.5M17.3 7.6c.4.4.7.8.9 1.3"/></symbol>
+  <symbol id="i-cart" viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/><path d="M2.5 3h2l2.2 11.6a2 2 0 0 0 2 1.6h8.6a2 2 0 0 0 2-1.6L21 7H5.2"/></symbol>
+  <symbol id="i-sprout" viewBox="0 0 24 24"><path d="M7 21h10"/><path d="M12 21v-6"/><path d="M12 15c-3.5 0-6-2-6-6 0-3 1-5 4-5 3 0 3 3 3 5 0 3-1 6-1 6Z"/><path d="M12 15c2-1.5 6-2.5 6-7-1.5 0-3 .5-3.5 1.5"/></symbol>
+  <symbol id="i-grain" viewBox="0 0 24 24"><path d="M12 22V8"/><path d="M12 8C8.5 6.5 6 7 5 4c3-.5 6 1 7 4Z"/><path d="M12 8c3.5-1.5 6-1 7-4-3-.5-6 1-7 4Z"/><path d="M12 13c-3-1-5-.5-6-3 2.5-.5 5 .5 6 3Z"/><path d="M12 13c3-1 5-.5 6-3-2.5-.5-5 .5-6 3Z"/></symbol>
+  <symbol id="i-weather" viewBox="0 0 24 24"><path d="M17.5 19H7a4.5 4.5 0 1 1 2.3-8.4A6 6 0 0 1 20 12.5a3.5 3.5 0 0 1-2.5 6.5Z"/><path d="M6 16l-1 3M12 16l-1 3M4.5 9.5l-1 2"/></symbol>
+  <symbol id="i-rain" viewBox="0 0 24 24"><path d="M17.5 19H7a4.5 4.5 0 1 1 2.3-8.4A6 6 0 0 1 20 12.5a3.5 3.5 0 0 1-2.5 6.5Z"/><path d="M7 15l-1.5 4M12 15l-1.5 4M16 15l-1.5 4"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2.5M12 19v2.5M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M2.5 12H5M19 12h2.5M4.6 19.4l1.8-1.8M17.6 6.4l1.8-1.8"/></symbol>
+  <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M17.5 19H7a4.5 4.5 0 1 1 2.3-8.4A6 6 0 0 1 20 12.5a3.5 3.5 0 0 1-2.5 6.5Z"/></symbol>
+  <symbol id="i-cloudsun" viewBox="0 0 24 24"><circle cx="8.5" cy="8.5" r="3.5"/><path d="M8.5 2v2M8.5 15v2M2.5 8.5h2M15 8.5h2M4 4l1.4 1.4M13 13l1.4 1.4M13 4 11.6 5.4M4 13l1.4-1.4"/><path d="M19.5 20H9.5a3.5 3.5 0 0 1-2.2-6.2"/><path d="M21 16a3 3 0 0 0-3-3c-.4 0-.8.1-1.1.2a4 4 0 0 0-1.6-2.4"/></symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="2"/></symbol>
+  <symbol id="i-trend" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 7-7"/><path d="M15 8h5v5"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 5-8 12-8 12s-8-7-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 21h4"/><path d="M15.1 13.9c.6-.9 2-1.7 2-4.4a5 5 0 0 0-10 0c0 2.7 1.4 3.5 2 4.4.4.7.4 1.6.4 2.1h5.2c0-.5 0-1.4.4-2.1Z"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-3.5 3.6-6 8-6s8 2.5 8 6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17 4 12"/></symbol>
+  <symbol id="i-checkc" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.5 2.5 5-5"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></symbol>
+  <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 22a6.5 6.5 0 0 1-6.5-6.5c0-4.7 6.5-12 6.5-12s6.5 7.3 6.5 12A6.5 6.5 0 0 1 12 22Z"/><path d="M9.5 14a2.5 2.5 0 0 0 2.5 2.5"/></symbol>
+  <symbol id="i-thermo" viewBox="0 0 24 24"><path d="M14 14.8V4a2 2 0 0 0-4 0v10.8a4 4 0 1 0 4 0Z"/><path d="M12 8.5v6"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-5"/><path d="M12 8h.01"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-3.6-3.6"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M10 11v6"/><path d="M14 11v6"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.4 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.8 2Z"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5Z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+  <symbol id="i-money" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M16 9h-4a2 2 0 1 0 0 4h0a2 2 0 1 1 0 4H8"/><path d="M12 7v2M12 15v2"/></symbol>
+  <symbol id="i-ruler" viewBox="0 0 24 24"><rect x="2" y="9" width="20" height="7" rx="1.5"/><path d="M7 9v2M12 9v3M17 9v2"/></symbol>
+  <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 20h16"/><path d="M12 15v3"/><path d="M18 4H6v6a6 6 0 0 0 12 0V4Z"/><path d="M12 15a6 6 0 0 1-6-6"/></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24"><path d="M3.9 20.1 5.1 16a8.2 8.2 0 1 1 3 3l-4.2 1.1Z"/><path d="M9 10.5c0 3 1.5 4.5 4.5 4.5.6 0 1-.4 1-.9v-1q-1.2.8-2.5-.4"/></symbol>
+  <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10Z"/><path d="M2 21c0-3 1.8-5.4 5.1-6C9.5 14.5 12 13 13 12"/></symbol>
+  <symbol id="i-mega" viewBox="0 0 24 24"><path d="m3 11 18-5v12L3 14v-3Z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M21 8v8a2 2 0 0 1-1 1.7l-7 4a2 2 0 0 1-2 0l-7-4A2 2 0 0 1 3 16V8a2 2 0 0 1 1-1.7l7-4a2 2 0 0 1 2 0l7 4A2 2 0 0 1 21 8Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+</svg><!-- ══════════ LOGIN ══════════ -->
 <div id="loginPage">
   <div class="login-wrap">
 
@@ -1092,21 +1457,21 @@ tbody tr:hover { background:#f7faf5; }
       </div>
       <div class="stats-mini">
         <div class="stat-pill">
-          <span class="stat-pill-icon">🎯</span>
+          <svg class="stat-pill-icon"><use href="#i-target"/></svg>
           <div class="stat-pill-body">
             <strong>94%</strong>
             <small>Précision des prédictions IA</small>
           </div>
         </div>
         <div class="stat-pill">
-          <span class="stat-pill-icon">📉</span>
+          <svg class="stat-pill-icon"><use href="#i-trend"/></svg>
           <div class="stat-pill-body">
             <strong>−35%</strong>
             <small>Pertes post-récolte réduites</small>
           </div>
         </div>
         <div class="stat-pill">
-          <span class="stat-pill-icon">📍</span>
+          <svg class="stat-pill-icon"><use href="#i-pin"/></svg>
           <div class="stat-pill-body">
             <strong>3 fokontany</strong>
             <small>Couverture Amoron'i Mania</small>
@@ -1122,17 +1487,17 @@ tbody tr:hover { background:#f7faf5; }
       </div>
       <div class="form-field">
         <label>Email</label>
-        <input type="email" id="loginEmail" value="ari@gmail.com" placeholder="votre@email.com"/>
+        <input type="email" id="loginEmail" value="ari@gmail.com" placeholder="votre@email.com" autocomplete="email"/>
       </div>
       <div class="form-field">
         <label>Mot de passe</label>
-        <input type="password" id="loginPass" value="123456" placeholder="••••••••"/>
+        <input type="password" id="loginPass" value="123456" placeholder="••••••••" autocomplete="current-password"/>
       </div>
-      <button class="btn-login" onclick="doLogin()">
+      <button class="btn-login" id="btnLogin" onclick="doLogin()">
         <span>Se connecter</span>
-        <div class="btn-arrow">→</div>
+        <div class="btn-arrow"><svg class="ic"><use href="#i-arrow"/></svg></div>
       </button>
-      <div class="hint-box">💡 Identifiants : ari@gmail.com / 123456</div>
+      <div class="hint-box"><svg class="ic"><use href="#i-bulb"/></svg><span>Mode démo autonome : utilisez <b>ari@gmail.com</b> / <b>123456</b> ou créez un compte en entrant n'importe quel email valide (mot de passe 4+ caractères).</span></div>
       <div class="err" id="loginErr"></div>
     </div>
 
@@ -1143,10 +1508,13 @@ tbody tr:hover { background:#f7faf5; }
 <div id="app">
   <div class="layout">
 
+    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()" aria-label="Menu"><svg class="ic"><use href="#i-menu"/></svg></button>
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
+
     <!-- Sidebar -->
     <nav class="sidebar" id="sidebar">
       <div class="sidebar-brand">
-        <div class="brand-icon">🌾</div>
+        <div class="brand-icon"><svg class="ic"><use href="#i-grain"/></svg></div>
         <div>
           <div class="name">AgriSmart</div>
           <div class="sub">Fandriana</div>
@@ -1154,22 +1522,22 @@ tbody tr:hover { background:#f7faf5; }
       </div>
 
       <div class="nav-section">Principal</div>
-      <div class="nav-item active" onclick="showPage('dashboard',this)">
-        <span class="ni">📊</span> Tableau de bord
+      <div class="nav-item active" data-page="dashboard" onclick="showPage('dashboard',this)">
+        <span class="ni"><svg class="ic"><use href="#i-dashboard"/></svg></span> Tableau de bord
       </div>
-      <div class="nav-item" onclick="showPage('prediction',this)">
-        <span class="ni">🧠</span> Prédiction IA
+      <div class="nav-item" data-page="prediction" onclick="showPage('prediction',this)">
+        <span class="ni"><svg class="ic"><use href="#i-brain"/></svg></span> Prédiction IA
       </div>
-      <div class="nav-item" onclick="showPage('marche',this)">
-        <span class="ni">🛒</span> Marché local
+      <div class="nav-item" data-page="marche" onclick="showPage('marche',this)">
+        <span class="ni"><svg class="ic"><use href="#i-cart"/></svg></span> Marché local
       </div>
 
       <div class="nav-section">Gestion</div>
-      <div class="nav-item" onclick="showPage('parcelles',this)">
-        <span class="ni">🌱</span> Mes parcelles
+      <div class="nav-item" data-page="parcelles" onclick="showPage('parcelles',this)">
+        <span class="ni"><svg class="ic"><use href="#i-sprout"/></svg></span> Mes parcelles
       </div>
-      <div class="nav-item" onclick="showPage('meteo',this)">
-        <span class="ni">🌤️</span> Météo &amp; Alertes
+      <div class="nav-item" data-page="meteo" onclick="showPage('meteo',this)">
+        <span class="ni"><svg class="ic"><use href="#i-weather"/></svg></span> Météo &amp; Alertes
       </div>
 
       <div class="sidebar-footer">
@@ -1180,54 +1548,59 @@ tbody tr:hover { background:#f7faf5; }
             <div class="urole" id="userRole">Agriculteur</div>
           </div>
         </div>
-        <button class="btn-logout" onclick="doLogout()">🚪 Déconnexion</button>
+        <button class="btn-logout" onclick="doLogout()"><svg class="ic"><use href="#i-logout"/></svg> Déconnexion</button>
       </div>
     </nav>
 
     <!-- Main -->
-    <main class="main">
-
-      <!-- ── Dashboard ── -->
+    <main class="main"><!-- ── Dashboard ── -->
       <div class="page active" id="page-dashboard">
         <div class="page-header">
           <div>
             <div class="page-title">Tableau de bord</div>
             <div class="page-sub">Vue d'ensemble — Fandriana, Amoron'i Mania</div>
           </div>
-          <div class="status-badge"><div class="dot"></div>Système actif</div>
+          <div class="header-right">
+            <div class="status-badge"><div class="dot"></div><span id="systemStatus">Système actif</span></div>
+            <div class="live-wrap">
+              <div class="live-time"><span id="clockHH">--</span><span class="colon">:</span><span id="clockMM">--</span></div>
+              <div class="live-date" id="clockDate">…</div>
+            </div>
+          </div>
         </div>
 
         <div class="kpi-grid">
           <div class="kpi-card">
             <div class="kpi-card-top">
               <div class="kpi-label">Prédictions réalisées</div>
-              <div class="kpi-icon-wrap">📊</div>
+              <div class="kpi-icon-wrap"><svg class="ic"><use href="#i-dashboard"/></svg></div>
             </div>
-            <div class="kpi-value" id="kpi-total">0</div>
+            <div class="kpi-value"><span data-kpi="total">0</span></div>
             <div class="kpi-sub">Depuis le lancement</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-card-top">
               <div class="kpi-label">Rendement moyen</div>
-              <div class="kpi-icon-wrap">🌾</div>
+              <div class="kpi-icon-wrap gold"><svg class="ic"><use href="#i-grain"/></svg></div>
             </div>
-            <div class="kpi-value"><span id="kpi-rend">—</span><small style="font-size:18px;color:var(--mid);font-family:'Plus Jakarta Sans',sans-serif;font-weight:400;"> t/ha</small></div>
+            <div class="kpi-value"><span data-kpi="rend">—</span><small style="font-size:18px;color:var(--mid);font-family:'Plus Jakarta Sans',sans-serif;font-weight:400;"> t/ha</small></div>
+            <div class="kpi-sub">Toutes cultures</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-card-top">
               <div class="kpi-label">Agriculteurs actifs</div>
-              <div class="kpi-icon-wrap">👨‍🌾</div>
+              <div class="kpi-icon-wrap blue"><svg class="ic"><use href="#i-user"/></svg></div>
             </div>
-            <div class="kpi-value" id="kpi-farmers">47</div>
+            <div class="kpi-value"><span data-kpi="farmers">47</span></div>
             <div class="kpi-sub">3 fokontany couverts</div>
           </div>
           <div class="kpi-card">
             <div class="kpi-card-top">
               <div class="kpi-label">Précision IA</div>
-              <div class="kpi-icon-wrap">🎯</div>
+              <div class="kpi-icon-wrap red"><svg class="ic"><use href="#i-target"/></svg></div>
             </div>
-            <div class="kpi-value">94<small style="font-size:18px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:400;">%</small></div>
-            <div class="kpi-trend trend-up">↑ +2% ce mois</div>
+            <div class="kpi-value"><span data-kpi="precision">94</span><small style="font-size:18px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:400;">%</small></div>
+            <div class="kpi-trend trend-up"><svg class="ic"><use href="#i-trend"/></svg> modélisation locale</div>
           </div>
         </div>
 
@@ -1235,6 +1608,7 @@ tbody tr:hover { background:#f7faf5; }
           <div class="card">
             <div class="card-title">Rendements par culture (t/ha)</div>
             <canvas id="chartRendement" height="180"></canvas>
+            <div id="chartFallback"></div>
           </div>
           <div class="card">
             <div class="card-title">Activités récentes</div>
@@ -1243,22 +1617,23 @@ tbody tr:hover { background:#f7faf5; }
         </div>
 
         <div class="card">
-          <div class="card-title">Historique des prédictions</div>
-          <div class="table-wrap">
+          <div class="card-head-row">
+            <div class="card-title" style="margin-bottom:0;">Historique des prédictions</div>
+            <button class="btn-ghost" onclick="exportCSV()"><svg class="ic"><use href="#i-download"/></svg> Exporter CSV</button>
+          </div>
+          <div class="table-wrap" style="margin-top:18px;">
             <table>
               <thead><tr><th>Culture</th><th>Surface</th><th>Pluie</th><th>Temp.</th><th>Sol</th><th>Rendement prévu</th><th>Statut</th></tr></thead>
               <tbody id="historyTableBody"></tbody>
             </table>
           </div>
         </div>
-      </div>
-
-      <!-- ── Prédiction IA ── -->
+      </div><!-- ── Prédiction IA ── -->
       <div class="page" id="page-prediction">
         <div class="page-header">
           <div>
             <div class="page-title">Prédiction IA</div>
-            <div class="page-sub">Estimez le rendement grâce à l'intelligence artificielle</div>
+            <div class="page-sub">Estimez le rendement grâce au moteur IA intégré</div>
           </div>
         </div>
         <div class="pred-layout">
@@ -1289,25 +1664,29 @@ tbody tr:hover { background:#f7faf5; }
                 <div class="form-group"><label class="form-label">Saison</label><select class="form-select" id="f-saison"><option value="grande saison" selected>Grande saison</option><option value="petite saison">Petite saison</option><option value="contre-saison">Contre-saison</option></select></div>
               </div>
               <div class="form-group"><label class="form-label">Problèmes constatés</label><select class="form-select" id="f-probleme"><option value="aucun">Aucun</option><option value="maladies foliaires">Maladies foliaires</option><option value="insectes ravageurs">Insectes ravageurs</option><option value="sécheresse">Sécheresse</option><option value="inondation">Inondation</option><option value="sols dégradés">Sols dégradés</option></select></div>
-              <button class="btn-predict" id="btnPredict" onclick="runPrediction()">🧠 Lancer la prédiction IA</button>
+              <button class="btn-predict" id="btnPredict" onclick="runPrediction()"><svg class="ic"><use href="#i-brain"/></svg> Lancer la prédiction IA</button>
             </div>
           </div>
 
           <div class="result-box" id="resultBox">
             <div class="card-title">Résultat de la prédiction</div>
             <div class="result-empty" id="resultEmpty">
-              <div class="big-icon">🌱</div>
+              <div class="big-icon"><svg class="ic"><use href="#i-sprout"/></svg></div>
               <div style="font-weight:600;font-size:15px;">En attente d'analyse</div>
               <div style="font-size:13px;color:var(--faint);">Remplissez le formulaire et lancez la prédiction</div>
             </div>
             <div id="resultLoading" style="display:none;">
-              <div class="loading-ai"><div class="spinner"></div><div style="font-weight:500;">Analyse en cours…</div></div>
+              <div class="loading-ai"><svg class="ic"><use href="#i-zap"/></svg><div style="font-weight:500;">Analyse en cours…</div></div>
             </div>
             <div id="resultContent" style="display:none;flex-direction:column;gap:18px;">
               <div class="rendement-big">
                 <div class="label">Rendement estimé</div>
                 <div class="value" id="res-rendement">—</div>
                 <div class="unit">tonnes / hectare</div>
+              </div>
+              <div class="rendement-sub">
+                <div class="sub-chip"><div class="v" id="res-production">—</div><div class="l">Production totale (t)</div></div>
+                <div class="sub-chip"><div class="v" id="res-confit">—</div><div class="l">Niveau de confiance</div></div>
               </div>
               <div>
                 <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600;">
@@ -1317,7 +1696,7 @@ tbody tr:hover { background:#f7faf5; }
                 <div class="confidence-bar"><div class="confidence-fill" id="res-conf-bar" style="width:0%"></div></div>
               </div>
               <div class="ai-response" id="res-text"></div>
-              <button class="btn-predict" style="background:var(--grad-gold);color:var(--ink);box-shadow:0 4px 18px rgba(240,192,64,.3);" onclick="savePrediction()">💾 Sauvegarder cette prédiction</button>
+              <button class="btn-predict" style="background:var(--grad-gold);color:var(--ink);box-shadow:0 4px 18px rgba(240,192,64,.3);" onclick="savePrediction()"><svg class="ic"><use href="#i-save"/></svg> Sauvegarder cette prédiction</button>
             </div>
           </div>
         </div>
@@ -1326,70 +1705,80 @@ tbody tr:hover { background:#f7faf5; }
         <div class="card">
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Date</th><th>Culture</th><th>Surface</th><th>Rendement prévu</th><th>Confiance</th></tr></thead>
+              <thead><tr><th>Date</th><th>Culture</th><th>Surface</th><th>Rendement</th><th>Production</th><th>Confiance</th><th></th></tr></thead>
               <tbody id="predHistoryBody"></tbody>
             </table>
           </div>
         </div>
-      </div>
-
-      <!-- ── Marché ── -->
+      </div><!-- ── Marché ── -->
       <div class="page" id="page-marche">
         <div class="page-header">
           <div>
             <div class="page-title">Marché local numérique</div>
             <div class="page-sub">Connectez producteurs et acheteurs — Fandriana</div>
           </div>
-          <button class="btn-add" onclick="openModal()">+ Publier une annonce</button>
+          <button class="btn-add" onclick="openModal()"><svg class="ic"><use href="#i-plus"/></svg> Publier une annonce</button>
         </div>
-        <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);">
+        <div class="kpi-grid">
           <div class="kpi-card">
-            <div class="kpi-card-top"><div class="kpi-label">Annonces actives</div><div class="kpi-icon-wrap">📢</div></div>
-            <div class="kpi-value" id="mkt-count">0</div>
+            <div class="kpi-card-top"><div class="kpi-label">Annonces actives</div><div class="kpi-icon-wrap"><svg class="ic"><use href="#i-mega"/></svg></div></div>
+            <div class="kpi-value"><span data-kpi="mktcount">0</span></div>
+            <div class="kpi-sub">Sur le marché actuel</div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-card-top"><div class="kpi-label">Cultures disponibles</div><div class="kpi-icon-wrap">🌾</div></div>
-            <div class="kpi-value" id="mkt-cultures">0</div>
+            <div class="kpi-card-top"><div class="kpi-label">Cultures disponibles</div><div class="kpi-icon-wrap gold"><svg class="ic"><use href="#i-grain"/></svg></div></div>
+            <div class="kpi-value"><span data-kpi="mktcultures">0</span></div>
+            <div class="kpi-sub">Variétés proposées</div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-card-top"><div class="kpi-label">Prix moyen riz</div><div class="kpi-icon-wrap">💰</div></div>
-            <div class="kpi-value">1 200<small style="font-size:16px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:400;"> Ar</small></div>
+            <div class="kpi-card-top"><div class="kpi-label">Prix moyen riz</div><div class="kpi-icon-wrap blue"><svg class="ic"><use href="#i-money"/></svg></div></div>
+            <div class="kpi-value"><span data-kpi="mktrizo">—</span><small style="font-size:16px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:400;"> Ar</small></div>
+            <div class="kpi-sub">Par kilogramme</div>
           </div>
+          <div class="kpi-card">
+            <div class="kpi-card-top"><div class="kpi-label">Prix moyen global</div><div class="kpi-icon-wrap red"><svg class="ic"><use href="#i-cart"/></svg></div></div>
+            <div class="kpi-value"><span data-kpi="mktavg">—</span><small style="font-size:16px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:400;"> Ar</small></div>
+            <div class="kpi-sub">Toutes cultures confondues</div>
+          </div>
+        </div>
+        <div class="market-toolbar">
+          <div class="search-box"><svg class="ic"><use href="#i-search"/></svg><input type="search" id="mktSearch" placeholder="Rechercher une culture ou un vendeur…" oninput="renderMarket()"/></div>
+          <div class="filter-chips" id="mktChips"></div>
         </div>
         <div class="market-grid" id="marketGrid"></div>
-      </div>
-
-      <!-- ── Parcelles ── -->
+      </div><!-- ── Parcelles ── -->
       <div class="page" id="page-parcelles">
         <div class="page-header">
           <div>
             <div class="page-title">Mes Parcelles</div>
             <div class="page-sub">Gestion et suivi de vos terres agricoles</div>
           </div>
+          <button class="btn-add" onclick="openFieldModal()"><svg class="ic"><use href="#i-plus"/></svg> Ajouter une parcelle</button>
         </div>
         <div class="kpi-grid">
           <div class="kpi-card">
-            <div class="kpi-card-top"><div class="kpi-label">Surface totale</div><div class="kpi-icon-wrap">📐</div></div>
-            <div class="kpi-value"><span id="parcelle-surface">0</span><small style="font-size:18px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:400;"> ha</small></div>
+            <div class="kpi-card-top"><div class="kpi-label">Surface totale</div><div class="kpi-icon-wrap"><svg class="ic"><use href="#i-ruler"/></svg></div></div>
+            <div class="kpi-value"><span data-kpi="parcelleSurface">0</span><small style="font-size:18px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:400;"> ha</small></div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-card-top"><div class="kpi-label">Parcelles actives</div><div class="kpi-icon-wrap">🌾</div></div>
-            <div class="kpi-value" id="parcelle-count">0</div>
+            <div class="kpi-card-top"><div class="kpi-label">Parcelles actives</div><div class="kpi-icon-wrap gold"><svg class="ic"><use href="#i-sprout"/></svg></div></div>
+            <div class="kpi-value"><span data-kpi="parcelleCount">0</span></div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-card-top"><div class="kpi-label">Avec irrigation</div><div class="kpi-icon-wrap">💧</div></div>
-            <div class="kpi-value" id="parcelle-irrig">0</div>
+            <div class="kpi-card-top"><div class="kpi-label">Avec irrigation</div><div class="kpi-icon-wrap blue"><svg class="ic"><use href="#i-drop"/></svg></div></div>
+            <div class="kpi-value"><span data-kpi="parcelleIrrig">0</span></div>
           </div>
           <div class="kpi-card">
-            <div class="kpi-card-top"><div class="kpi-label">Meilleur rendement</div><div class="kpi-icon-wrap">🏆</div></div>
-            <div class="kpi-value">—<small style="font-size:18px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:400;"> t/ha</small></div>
+            <div class="kpi-card-top"><div class="kpi-label">Meilleur rendement</div><div class="kpi-icon-wrap red"><svg class="ic"><use href="#i-trophy"/></svg></div></div>
+            <div class="kpi-value"><span data-kpi="parcelleBest">—</span><small style="font-size:16px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:400;"> t/ha</small></div>
+            <div class="kpi-sub">Parcelle la plus productive</div>
           </div>
         </div>
         <div class="card">
           <div class="card-title">Mes parcelles</div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Nom</th><th>Culture</th><th>Surface</th><th>Sol</th><th>Statut</th></tr></thead>
+              <thead><tr><th>Nom</th><th>Culture</th><th>Surface</th><th>Sol</th><th>Irrigation</th><th>Statut</th><th></th></tr></thead>
               <tbody id="fieldsTableBody"></tbody>
             </table>
           </div>
@@ -1401,7 +1790,7 @@ tbody tr:hover { background:#f7faf5; }
         <div class="page-header">
           <div>
             <div class="page-title">Météo &amp; Alertes</div>
-            <div class="page-sub">Prévisions climatiques pour Fandriana</div>
+            <div class="page-sub">Prévisions sur 7 jours pour Fandriana</div>
           </div>
         </div>
         <div class="weather-row" id="weatherRow"></div>
@@ -1413,12 +1802,10 @@ tbody tr:hover { background:#f7faf5; }
 
     </main>
   </div>
-</div>
-
-<!-- Modal -->
+</div><!-- Modal : publier une annonce -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
-    <h3>📢 Publier une annonce</h3>
+    <h3><svg class="ic"><use href="#i-mega"/></svg> Publier une annonce</h3>
     <div class="pred-form">
       <div class="form-row">
         <div class="form-group"><label class="form-label">Culture</label><select class="form-select" id="m-culture"><option>Riz</option><option>Maïs</option><option>Manioc</option><option>Légumes</option><option>Haricot</option><option>Pomme de terre</option></select></div>
@@ -1426,350 +1813,830 @@ tbody tr:hover { background:#f7faf5; }
       </div>
       <div class="form-row">
         <div class="form-group"><label class="form-label">Prix (Ar/kg)</label><input type="number" class="form-input" id="m-prix" value="1200" min="1"/></div>
-        <div class="form-group"><label class="form-label">Nom du vendeur</label><input type="text" class="form-input" id="m-vendeur" value="SOLOARISOA D."/></div>
+        <div class="form-group"><label class="form-label">Nom du vendeur</label><input type="text" class="form-input" id="m-vendeur" value=""/></div>
       </div>
       <div class="form-group"><label class="form-label">Localisation</label><input type="text" class="form-input" id="m-loc" value="Fandriana, Tsarahonenana"/></div>
-      <div class="form-group"><label class="form-label">Contact (téléphone)</label><input type="text" class="form-input" id="m-tel" value="034 12 345 67"/></div>
+      <div class="form-group"><label class="form-label">Contact (téléphone)</label><input type="text" class="form-input" id="m-tel" value="034 00 000 00"/></div>
     </div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal()">Annuler</button>
-      <button class="btn-save" onclick="addListing()">✅ Publier</button>
+      <button class="btn-save" onclick="addListing()"><svg class="ic"><use href="#i-mega"/></svg> Publier</button>
     </div>
   </div>
 </div>
 
+<!-- Modal : ajouter une parcelle -->
+<div class="modal-overlay" id="fieldOverlay">
+  <div class="modal">
+    <h3><svg class="ic"><use href="#i-sprout"/></svg> Ajouter une parcelle</h3>
+    <div class="pred-form">
+      <div class="form-group"><label class="form-label">Nom de la parcelle</label><input type="text" class="form-input" id="p-name" placeholder="Ex : Parcelle Tanambao"/></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Culture</label><select class="form-select" id="p-culture"><option>Riz</option><option>Maïs</option><option>Manioc</option><option>Légumes</option><option>Haricot</option><option>Pomme de terre</option></select></div>
+        <div class="form-group"><label class="form-label">Surface (ha)</label><input type="number" class="form-input" id="p-surface" value="1.0" step="0.1" min="0.05"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Type de sol</label><select class="form-select" id="p-sol"><option value="argileux">Argileux</option><option value="limoneux" selected>Limoneux</option><option value="sableux">Sableux</option><option value="latéritique">Latéritique</option><option value="tourbeux">Tourbeux</option></select></div>
+        <div class="form-group"><label class="form-label">Irrigation</label><select class="form-select" id="p-irrigation"><option value="pluviale">Pluviale</option><option value="partielle">Partielle</option><option value="complète">Complète</option></select></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeFieldModal()">Annuler</button>
+      <button class="btn-save" onclick="addField()"><svg class="ic"><use href="#i-checkc"/></svg> Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal : contacter un vendeur -->
+<div class="modal-overlay" id="contactOverlay">
+  <div class="modal modal-sm">
+    <h3><svg class="ic"><use href="#i-phone"/></svg> Contacter le vendeur</h3>
+    <div class="contact-hero">
+      <div class="ch-emoji" id="ct-emoji"><svg class="ic"><use href="#i-sprout"/></svg></div>
+      <div class="ch-name" id="ct-name">—</div>
+      <div class="ch-sub" id="ct-sub">—</div>
+    </div>
+    <div class="contact-actions">
+      <a class="btn-call" id="ct-call" href="#"><svg class="ic"><use href="#i-phone"/></svg> Appeler</a>
+      <a class="btn-wa" id="ct-wa" href="#" target="_blank" rel="noopener"><svg class="ic"><use href="#i-wa"/></svg> Discuter sur WhatsApp</a>
+    </div>
+    <div class="copy-row" id="ct-phoneRow"><svg class="ic"><use href="#i-copy"/></svg><code id="ct-phone">—</code><button class="btn-ghost" onclick="copyPhone()"><svg class="ic"><use href="#i-copy"/></svg> Copier</button></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeContact()">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<div id="toastWrap"></div>
+
 <script>
-const API_URL = 'http://192.168.1.248:3000/api';
-const AI_URL  = 'http://192.168.1.248:8000';
-let authToken = null;
-let currentUser = null;
-let marketList = [];
+/* ═══════════════════════════════════════════════AgriSmart — version monofichier autonome
+   Fonctionne sans serveur : données en localStorage,
+   moteur de prédiction IA intégré, météo simulée.
+   Icônes vectorielles SVG inline + composants interactifs.
+═══════════════════════════════════════════════════ */
 
-async function apiCall(endpoint, method='GET', body=null) {
-  const headers = {'Content-Type':'application/json'};
-  if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
-  const res = await fetch(`${API_URL}${endpoint}`,{method,headers,body:body?JSON.stringify(body):undefined});
-  if (!res.ok) { let e={};try{e=await res.json();}catch(x){} throw new Error(e.message||`Erreur ${res.status}`); }
-  return res.json();
+/* ───────── Stockage local ───────── */
+const LS = {
+  get(key, def){ try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; } catch(e){ return def; } },
+  set(key, val){ try { localStorage.setItem(key, JSON.stringify(val)); } catch(e){} }
+};
+
+const FMT  = n => new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(n || 0);
+const FMT1 = n => new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 1 }).format(n || 0);
+
+const IC = id => `<svg class="ic"><use href="#${id}"/></svg>`;
+
+let currentUser = LS.get('as_user', null);
+let predictions = LS.get('as_predictions', []);
+let fields      = LS.get('as_fields', []);
+let market      = LS.get('as_market', []);
+let _pendingResult = null;
+
+function savePredictions(){ LS.set('as_predictions', predictions); }
+function saveFields(){ LS.set('as_fields', fields); }
+function saveMarket(){ LS.set('as_market', market); }
+
+/* ───────── Moteur IA local ───────── */
+const CULTURES = {
+  'Riz':            { icon:'i-grain',  base:4.2, tMin:18, tMax:28, rMin:130, rMax:260, soilGood:['argileux','limoneux'], altMax:1300, desc:'saisonnière très répandue' },
+  'Maïs':           { icon:'i-grain',  base:3.4, tMin:20, tMax:30, rMin:350, rMax:500, soilGood:['limoneux','argileux'], altMax:1800, desc:'tolérante à la sécheresse relative' },
+  'Manioc':         { icon:'i-sprout', base:6.2, tMin:22, tMax:30, rMin:150, rMax:300, soilGood:['sableux','latéritique'], altMax:1500, desc:'culture de subsistance robuste' },
+  'Légumes':        { icon:'i-leaf',   base:4.6, tMin:15, tMax:25, rMin:110, rMax:220, soilGood:['limoneux','tourbeux'], altMax:2000, desc:'cycle court à forte valeur' },
+  'Haricot':        { icon:'i-sprout', base:1.9, tMin:16, tMax:24, rMin:90,  rMax:180, soilGood:['limoneux','argileux'], altMax:2000, desc:'fixateur d\'azote au sol' },
+  'Pomme de terre': { icon:'i-sprout', base:4.1, tMin:14, tMax:20, rMin:280, rMax:450, soilGood:['sableux','limoneux'], altMax:2200, desc:'sensible à l\'excès d\'eau' }
+};
+const CULT_ICON = c => CULTURES[c] ? IC(CULTURES[c].icon) : IC('i-grain');
+
+const SOIL_FACT    = { 'argileux':1.00, 'limoneux':1.08, 'sableux':0.92, 'latéritique':0.94, 'tourbeux':0.98 };
+const FERT_FACT    = { 'aucun':0.90, 'organique':1.08, 'chimique':1.06, 'mixte':1.14 };
+const IRRIG_FACT   = { 'pluviale':1.00, 'partielle':1.06, 'complète':1.12 };
+const SAISON_FACT  = { 'grande saison':1.08, 'petite saison':0.96, 'contre-saison':0.90 };
+const PROBLEME_PEN = { 'aucun':0, 'maladies foliaires':0.18, 'insectes ravageurs':0.22, 'sécheresse':0.28, 'inondation':0.30, 'sols dégradés':0.15 };
+
+function factorDist(x, xMin, xMax, weight){
+  if (x >= xMin && x <= xMax) return 1;
+  const d = x < xMin ? (xMin - x) / xMin : (x - xMax) / xMax;
+  return Math.max(0.60, 1 - d * weight);
 }
 
-async function doLogin() {
-  const email   = document.getElementById('loginEmail').value;
-  const pass    = document.getElementById('loginPass').value;
-  const errDiv  = document.getElementById('loginErr');
-  const btn     = document.querySelector('.btn-login');
-  btn.innerHTML = '<span>Connexion…</span>';
-  btn.disabled  = true;
+function computePrediction(inp){
+  const info = CULTURES[inp.culture] || CULTURES['Riz'];
+  let y = info.base;
+
+  const tF = factorDist(inp.temp, info.tMin, info.tMax, 0.35);
+  const rF = factorDist(inp.pluie, info.rMin, info.rMax, 0.35);
+
+  let altF = 1;
+  if (inp.altitude > info.altMax) altF = Math.max(0.6, 1 - (inp.altitude - info.altMax) / info.altMax * 0.4);
+
+  const soilF  = SOIL_FACT[inp.sol] || 1;
+  const soilBonus = info.soilGood.includes(inp.sol) ? 1.05 : 0.96;
+  const fertF  = FERT_FACT[inp.engrais] || 1;
+  const irrigF = IRRIG_FACT[inp.irrigation] || 1;
+  const saisonF = SAISON_FACT[inp.saison] || 1;
+  const probF  = 1 - (PROBLEME_PEN[inp.probleme] || 0);
+
+  const noise = 1 + (Math.random() * 0.04 - 0.02);
+  y = y * tF * rF * altF * soilF * soilBonus * fertF * irrigF * saisonF * probF * noise;
+  y = Math.min(info.base * 1.55, Math.max(0.3, +y.toFixed(2)));
+
+  /* Confiance : dégradée quand les conditions s'éloignent de l'optimum */
+  let conf = 97;
+  if (tF < 1)  conf -= Math.round((1 - tF) * 28);
+  if (rF < 1)  conf -= Math.round((1 - rF) * 28);
+  if (altF < 1) conf -= Math.round((1 - altF) * 12);
+  if (!info.soilGood.includes(inp.sol)) conf -= 6;
+  if (inp.probleme !== 'aucun') conf -= 8;
+  conf = Math.min(97, Math.max(60, conf));
+
+  return { rendement: y, production: +(y * inp.surface).toFixed(2), confiance: conf, info };
+}
+
+function buildConseils(inp, res){
+  const info = res.info;
+  const c = [];
+  if (inp.temp < info.tMin) c.push(`Température (${inp.temp}°C) inférieure à l'optimum (${info.tMin}–${info.tMax}°C) : protégez les jeunes plants et privilégiez un paillage.`);
+  else if (inp.temp > info.tMax) c.push(`Température élevée (${inp.temp}°C) : apportez un paillage et arrosez tôt le matin pour limiter le stress hydrique.`);
+  if (inp.pluie < info.rMin) c.push(`Pluviométrie insuffisante (${inp.pluie} mm) : renforcez l'irrigation ou optez pour des variétés précoces.`);
+  else if (inp.pluie > info.rMax) c.push(`Pluies abondantes (${inp.pluie} mm) : prévoyez des canaux de drainage pour éviter la stagnation d'eau.`);
+  if (inp.altitude > info.altMax) c.push(`Altitude élevée (${inp.altitude} m) : le développement peut être ralenti, choisissez des variétés adaptées au froid.`);
+  if (!info.soilGood.includes(inp.sol)) c.push(`Sol ${inp.sol} peu favorable : enrichissez avec de la matière organique pour améliorer la structure.`);
+  if (inp.engrais === 'aucun') c.push('Apport d\'engrais recommandé : un fertilisant organique (fumier, compost) augmenterait sensiblement le rendement.');
+  if (inp.probleme === 'sécheresse') c.push('Installez un paillage et privilégiez l\'irrigation goutte-à-goutte pour économiser l\'eau.');
+  if (inp.probleme === 'inondation') c.push('Surélevez les buttes et creusez des rigoles de drainage pour protéger les racines.');
+  if (inp.probleme === 'maladies foliaires') c.push('Surveillez les feuilles chaque semaine et retirez les parties atteintes immédiatement.');
+  if (inp.probleme === 'insectes ravageurs') c.push('Utilisez des pièges naturels et une bouillie à base de plantes répulsives avant tout traitement chimique.');
+  c.push('Prévoyez la récolte selon la fenêtre sèche indiquée dans « Météo & Alertes ».');
+  return c.slice(0, 5);
+}
+
+function buildAnalyse(inp, res){
+  const info = res.info;
+  const saison = inp.saison.charAt(0).toUpperCase() + inp.saison.slice(1);
+  let txt = `Analyse IA pour la culture de ${inp.culture} ${CULT_ICON(inp.culture)} (${info.desc}). Pour une surface de ${FMT1(inp.surface)} ha, une pluviométrie de ${FMT(inp.pluie)} mm/mois et une température moyenne de ${FMT1(inp.temp)} °C, le rendement estimé est de <b>${FMT1(res.rendement)} t/ha</b>, soit une production totale d'environ <b>${FMT1(res.production)} tonnes</b>.`;
+
+  const conds = [];
+  if (inp.temp >= info.tMin && inp.temp <= info.tMax) conds.push('température optimale');
+  else if (inp.temp < info.tMin) conds.push('température inférieure à l\'optimum');
+  else conds.push('température supérieure à l\'optimum');
+
+  if (inp.pluie >= info.rMin && inp.pluie <= info.rMax) conds.push('pluies favorables');
+  else if (inp.pluie < info.rMin) conds.push('stress hydrique potentiel');
+  else conds.push('risque d\'excès d\'eau');
+
+  txt += ` Contexte relevé : ${conds.join(' ; ')}. ${saison} sur un sol ${inp.sol}, avec ${inp.engrais === 'aucun' ? 'aucun apport' : 'apport ' + inp.engrais} d'engrais et irrigation ${inp.irrigation}${inp.probleme !== 'aucun' ? ` — attention au problème actif : ${inp.probleme}.` : '.'}`;
+  if (res.confiance >= 85) txt += ' Les conditions étant proches de l\'optimum, la fiabilité de cette estimation est élevée.';
+  else if (res.confiance >= 72) txt += ' Les conditions sont partiellement dégradées : les recommandations ci-dessous aideront à sécuriser le rendement.';
+  else txt += ' Les conditions sont nettement défavorables : un ajustement des pratiques est fortement conseillé.';
+  return txt;
+}
+
+/* ───────── Toasts ───────── */
+function toast(msg, type){
+  const wrap = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast ' + (type || 'ok');
+  const iconId = type === 'err' ? 'i-alert' : type === 'info' ? 'i-info' : 'i-checkc';
+  t.innerHTML = IC(iconId) + `<span>${msg}</span>`;
+  wrap.appendChild(t);
+  setTimeout(()=>{ t.classList.add('out'); setTimeout(()=>t.remove(), 350); }, 3200);
+}
+
+/* ───────── Login / Logout ───────── */
+function doLogin(){
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPass').value;
+  const errDiv = document.getElementById('loginErr');
+  const btn    = document.getElementById('btnLogin');
+
   errDiv.textContent = '';
-  try {
-    const res = await fetch(`${API_URL}/users/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pass})});
-    if (!res.ok) throw new Error();
-    const data = await res.json();
-    authToken = data.token;
-    localStorage.setItem('token', authToken);
-    await loadUserProfile();
-    startApp();
-  } catch(e) {
-    errDiv.textContent = '❌ Identifiants incorrects ou serveur indisponible.';
-  } finally {
-    btn.innerHTML = '<span>Se connecter</span><div class="btn-arrow">→</div>';
-    btn.disabled  = false;
-  }
+  btn.disabled = true;
+  btn.querySelector('span').textContent = 'Connexion…';
+
+  setTimeout(()=>{
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errDiv.textContent = 'Adresse email invalide.';
+    } else if (pass.length < 4) {
+      errDiv.textContent = 'Le mot de passe doit contenir au moins 4 caractères.';
+    } else {
+      const known = (email.toLowerCase() === 'ari@gmail.com' && pass === '123456');
+      const nameFrom = email.split('@')[0];
+      const pretty = nameFrom.charAt(0).toUpperCase() + nameFrom.slice(1);
+      currentUser = {
+        name: known ? 'Arisoa R.' : pretty,
+        role: known ? 'Agriculteur · Fandriana' : 'Agriculteur',
+        email,
+        firstLogin: Date.now()
+      };
+      LS.set('as_user', currentUser);
+      startApp();
+      toast(known ? 'Bienvenue, Arisoa !' : `Compte démo créé : ${pretty}`, 'ok');
+    }
+    btn.disabled = false;
+    btn.querySelector('span').textContent = 'Se connecter';
+  }, 450);
 }
 
-async function loadUserProfile() {
-  try {
-    const data = await apiCall('/users/profile');
-    const user = data.user || data;
-    currentUser = user;
-    document.getElementById('userName').textContent   = user.name  || 'Utilisateur';
-    document.getElementById('userRole').textContent   = user.role  || 'Agriculteur';
-    document.getElementById('userAvatar').textContent = (user.name||'A').charAt(0).toUpperCase();
-  } catch(e) { console.warn('Profil non chargé',e); }
+function initUserUI(){
+  document.getElementById('userName').textContent = currentUser ? currentUser.name : 'Utilisateur';
+  document.getElementById('userRole').textContent = currentUser ? currentUser.role : 'Agriculteur';
+  document.getElementById('userAvatar').textContent = (currentUser ? currentUser.name : 'A').charAt(0).toUpperCase();
 }
 
-function startApp() {
-  document.getElementById('loginPage').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  loadDashboardData();
-  loadPredictionsHistory();
-  loadFields();
-  loadMarket();
-  loadWeather();
-  setInterval(loadDashboardData, 60000);
-}
-
-function doLogout() {
-  authToken = null;
-  localStorage.removeItem('token');
+function doLogout(){
+  currentUser = null;
+  LS.set('as_user', null);
   document.getElementById('loginPage').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
+  togglassidebarClose();
+  toast('Vous êtes déconnecté(e).', 'info');
+}/* ───────── Seed : premières données ───────── */
+function seedDB(){
+  if (LS.get('as_seeded', false)) return;
+  const iso = ms => new Date(ms).toISOString();
+  const now = Date.now(), day = 86400000;
+
+  predictions = [
+    { id:'s1', created_at: iso(now - 21*day), culture_type:'Riz',        surface_ha:1.5, pluie_mm:210, temperature_c:23, type_sol:'argileux', rendement_prevu:4.6, production_t:6.9, confiance:91 },
+    { id:'s2', created_at: iso(now - 15*day), culture_type:'Maïs',       surface_ha:2.0, pluie_mm:420, temperature_c:24, type_sol:'limoneux', rendement_prevu:3.2, production_t:6.4, confiance:88 },
+    { id:'s3', created_at: iso(now - 11*day), culture_type:'Manioc',     surface_ha:3.0, pluie_mm:260, temperature_c:26, type_sol:'latéritique', rendement_prevu:5.8, production_t:17.4, confiance:86 },
+    { id:'s4', created_at: iso(now - 8*day),  culture_type:'Légumes',    surface_ha:0.8, pluie_mm:150, temperature_c:20, type_sol:'tourbeux', rendement_prevu:4.4, production_t:3.5, confiance:90 },
+    { id:'s5', created_at: iso(now - 4*day),  culture_type:'Haricot',    surface_ha:1.2, pluie_mm:120, temperature_c:21, type_sol:'limoneux', rendement_prevu:2.0, production_t:2.4, confiance:84 },
+    { id:'s6', created_at: iso(now - 1*day),  culture_type:'Riz',        surface_ha:2.2, pluie_mm:190, temperature_c:22, type_sol:'limoneux', rendement_prevu:4.9, production_t:10.8, confiance:93 }
+  ];
+
+  fields = [
+    { id:'f1', name:'Parcelle Tanambao',     culture_type:'Riz',        surface_ha:1.5, soil_type:'argileux',   irrigation:'complète', status:'active' },
+    { id:'f2', name:'Champ d\'Ambatomena',   culture_type:'Maïs',       surface_ha:2.0, soil_type:'limoneux',   irrigation:'pluviale', status:'active' },
+    { id:'f3', name:'Jardin Tsarahonenana',  culture_type:'Légumes',    surface_ha:0.8, soil_type:'tourbeux',   irrigation:'partielle', status:'active' },
+    { id:'f4', name:'Parcelle Betafo',       culture_type:'Manioc',     surface_ha:3.2, soil_type:'latéritique', irrigation:'pluviale', status:'inactive' }
+  ];
+
+  market = [
+    { id:'m1', culture:'Riz',            qty:800, prix:1300, vendeur:'Rakoto Jean',      loc:'Fandriana centre',   tel:'034 11 111 11', date: dateStr(now - 1*day) },
+    { id:'m2', culture:'Maïs',           qty:500, prix:900,  vendeur:'Rasoa Marie',      loc:'Tsarahonenana',      tel:'033 22 222 22', date: dateStr(now - 2*day) },
+    { id:'m3', culture:'Manioc',         qty:1200,prix:450,  vendeur:'Rabe Paul',        loc:'Ambohimahasoa',      tel:'032 33 333 33', date: dateStr(now - 3*day) },
+    { id:'m4', culture:'Haricot',        qty:180, prix:2600, vendeur:'Voahangy Solofo',  loc:'Fandriana nord',     tel:'034 44 444 44', date: dateStr(now - 2*day) },
+    { id:'m5', culture:'Pomme de terre', qty:950, prix:1500, vendeur:'Jean Claude',      loc:'Ivato',              tel:'033 55 555 55', date: dateStr(now - 4*day) }
+  ];
+
+  savePredictions(); saveFields(); saveMarket();
+  LS.set('as_seeded', true);
+}
+function dateStr(ms){ return new Date(ms).toISOString().split('T')[0]; }
+
+/* ───────── App ───────── */
+function startApp(){
+  seedDB();
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  initUserUI();
+  startClock();
+  renderDashboard();
+  renderPredictionHistory();
+  renderFields();
+  renderMarket();
+  renderWeather();
 }
 
-async function loadDashboardData() {
-  try {
-    const preds = await apiCall('/predictions/history');
-    const predictions = preds.predictions || [];
-    renderDashboardStats(predictions);
-    renderHistoryTable(predictions);
-    renderChart(predictions);
-    renderActivities(predictions);
-  } catch(e) { console.warn('Dashboard',e); }
+/* ───────── Horloge live ───────── */
+function startClock(){
+  const tick = () => {
+    const d = new Date();
+    const hh = String(d.getHours()).padStart(2,'0');
+    const mm = String(d.getMinutes()).padStart(2,'0');
+    const hhEl = document.getElementById('clockHH');
+    const mmEl = document.getElementById('clockMM');
+    if (hhEl) hhEl.textContent = hh;
+    if (mmEl) mmEl.textContent = mm;
+    const de = document.getElementById('clockDate');
+    if (de) de.textContent = d.toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  };
+  tick();
+  setInterval(tick, 1000);
 }
 
-function renderDashboardStats(preds) {
-  const total = preds.length;
-  const avg   = total ? (preds.reduce((s,p)=>s+(p.rendement_prevu||0),0)/total).toFixed(1) : '—';
-  document.getElementById('kpi-total').textContent = total;
-  document.getElementById('kpi-rend').textContent  = avg;
+/* ─── Dashboard ─── */
+function animateNum(sel, end, dec, suffix){
+  const el = document.querySelector(sel);
+  if (!el) return;
+  if (typeof end === 'string'){ el.textContent = end; return; }
+  const start = 0, dur = 900, t0 = performance.now();
+  const fmt = v => dec ? FMT1(v) : FMT(v);
+  function step(now){
+    const p = Math.min(1, (now - t0) / dur);
+    const eased = 1 - Math.pow(1 - p, 3);
+    el.textContent = fmt(start + (end - start) * eased) + (suffix || '');
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
 }
 
-function renderHistoryTable(preds) {
+function renderDashboard(){
+  const total = predictions.length;
+  const avg   = total ? +(predictions.reduce((s,p)=>s+(+p.rendement_prevu||0),0)/total).toFixed(1) : null;
+  const avgConf = total ? Math.round(predictions.reduce((s,p)=>s+(+p.confiance||0),0)/total) : 94;
+
+  animateNum('[data-kpi="total"]', total, 0, '');
+  animateNum('[data-kpi="rend"]', avg === null ? '—' : avg, 1, '');
+  animateNum('[data-kpi="farmers"]', 47, 0, '');
+  animateNum('[data-kpi="precision"]', avgConf, 0, '');
+
+  renderHistoryTable();
+  renderChart();
+  renderActivities();
+}function renderHistoryTable(){
   const tbody = document.getElementById('historyTableBody');
-  if (!preds.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--faint);">Aucune prédiction enregistrée</td></tr>';return;}
-  tbody.innerHTML = preds.slice().reverse().map(p=>`
+  const sorted = predictions.slice().reverse();
+  if (!sorted.length){ tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--faint);">Aucune prédiction enregistrée — lancez une prédiction IA.</td></tr>'; return; }
+  tbody.innerHTML = sorted.map(p=>`
     <tr>
-      <td><span class="badge badge-green">${p.culture_type||'Riz'}</span></td>
-      <td>${p.surface_ha||p.surface||'?'} ha</td>
-      <td>${p.pluie_mm||p.pluie||'—'} mm</td>
-      <td>${p.temperature_c||p.temp||'—'}°C</td>
-      <td>${p.soil_type||p.sol||'—'}</td>
-      <td class="rendement-val">${p.rendement_prevu||p.rendement||0} t/ha</td>
-      <td><span class="badge badge-gold">✓ Sauvegardée</span></td>
+      <td><span class="badge badge-green">${CULT_ICON(p.culture_type)} ${p.culture_type}</span></td>
+      <td>${FMT1(p.surface_ha)} ha</td>
+      <td>${FMT(p.pluie_mm)} mm</td>
+      <td>${FMT1(p.temperature_c)}°C</td>
+      <td>${p.type_sol||'—'}</td>
+      <td class="rendement-val">${FMT1(p.rendement_prevu)} t/ha</td>
+      <td><span class="badge badge-gold">${IC('i-check')} Sauvegardée</span></td>
     </tr>`).join('');
 }
 
-function renderChart(preds) {
-  const map = new Map();
-  preds.forEach(p=>{
-    const c = p.culture_type||'Riz';
-    const r = p.rendement_prevu||0;
-    if(!map.has(c)) map.set(c,{sum:0,n:0});
-    const s = map.get(c); s.sum+=r; s.n++;
+function renderChart(){
+  const mapU = new Map();
+  predictions.forEach(p=>{
+    const c = p.culture_type||'Riz', r = +p.rendement_prevu||0;
+    if(!mapU.has(c)) mapU.set(c,{sum:0,n:0});
+    const s = mapU.get(c); s.sum+=r; s.n++;
   });
-  const labels = [...map.keys()];
-  const data   = labels.map(c=>(map.get(c).sum/map.get(c).n).toFixed(1));
+  const labels = [...mapU.keys()];
+  const data   = labels.map(c=>+(mapU.get(c).sum/mapU.get(c).n).toFixed(1));
   const colors = ['#1e8f3e','#25a849','#7ddb5e','#f0c040','#0984e3','#6c5ce7'];
-  const ctx = document.getElementById('chartRendement').getContext('2d');
-  if(window._chart) window._chart.destroy();
-  window._chart = new Chart(ctx,{
-    type:'bar',
-    data:{
-      labels,
-      datasets:[{
-        label:'Rendement moyen (t/ha)',
-        data,
-        backgroundColor:colors.slice(0,labels.length),
-        borderRadius:12,
-        borderSkipped:false
-      }]
-    },
-    options:{
-      responsive:true,
-      plugins:{legend:{display:false}},
-      scales:{
-        y:{beginAtZero:true,grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{family:'Plus Jakarta Sans'}}},
-        x:{grid:{display:false},ticks:{font:{family:'Plus Jakarta Sans'}}}
-      }
+
+  const fallback = document.getElementById('chartFallback');
+  const canvas = document.getElementById('chartRendement');
+
+  if (window.Chart) {
+    fallback.innerHTML = '';
+    canvas.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    if (window._chart) window._chart.destroy();
+    if (!labels.length) {
+      window._chart = new Chart(ctx, { type:'bar', data:{ labels:['—'], datasets:[{ data:[0] }] }, options:{ responsive:true, plugins:{legend:{display:false}} } });
+      return;
     }
-  });
+    window._chart = new Chart(ctx,{
+      type:'bar',
+      data:{ labels, datasets:[{
+        label:'Rendement moyen (t/ha)', data,
+        backgroundColor:colors.slice(0, labels.length),
+        borderRadius:12, borderSkipped:false
+      }]},
+      options:{
+        responsive:true,
+        plugins:{ legend:{display:false} },
+        scales:{
+          y:{ beginAtZero:true, grid:{ color:'rgba(0,0,0,.04)' }, ticks:{ font:{ family:'Plus Jakarta Sans' } } },
+          x:{ grid:{ display:false }, ticks:{ font:{ family:'Plus Jakarta Sans' } } }
+        }
+      }
+    });
+    return;
+  }
+
+  /* Sans internet → barres DOM */
+  canvas.style.display = 'none';
+  if (!labels.length) { fallback.innerHTML = '<div class="fallback-empty">Rien à afficher pour le moment</div>'; return; }
+  const max = Math.max(...data, 1);
+  fallback.innerHTML = '<div class="fallback-chart">' + labels.map((l,i)=>{
+    const pct = Math.max(3, Math.round(data[i]/max*100));
+    return `<div class="fallback-bar-row">
+      <div class="fallback-bar-label">${l}</div>
+      <div class="fallback-bar-track"><div class="fallback-bar-fill" style="width:${pct}%;background:${colors[i%colors.length]}">${data[i]}</div></div>
+    </div>`;
+  }).join('') + '</div>';
 }
 
-function renderActivities(preds) {
+function renderActivities(){
   const list = document.getElementById('activityList');
-  if(!preds.length){list.innerHTML='<div class="activity-item"><div class="activity-dot"></div><div>Aucune activité récente</div></div>';return;}
-  list.innerHTML = preds.slice(0,5).map(p=>`
+  const sorted = predictions.slice().reverse().slice(0, 5);
+  if (!sorted.length){ list.innerHTML = '<div class="activity-item"><div>Aucune activité récente</div></div>'; return; }
+  list.innerHTML = sorted.map(p=>`
     <div class="activity-item">
-      <div class="activity-dot"></div>
+      ${IC('i-zap')}
       <div>
-        <div class="ac-title">Prédiction ${p.culture_type||''} — ${p.rendement_prevu} t/ha</div>
-        <div class="ac-time">${new Date(p.created_at).toLocaleString('fr-FR')}</div>
+        <div class="ac-title"><span class="ac-ic">${CULT_ICON(p.culture_type)}</span> Prédiction ${p.culture_type} — ${FMT1(p.rendement_prevu)} t/ha</div>
+        <div class="ac-time">${dateFmt(p.created_at)}</div>
       </div>
     </div>`).join('');
-}
-
-async function runPrediction() {
+}/* ─── Prédiction IA ─── */
+function runPrediction(){
   const btn = document.getElementById('btnPredict');
-  btn.disabled = true; btn.innerHTML = '⏳ Analyse en cours…';
+  btn.disabled = true; btn.innerHTML = `${IC('i-zap')} <span>Analyse en cours…</span>`;
+
+  const inp = {
+    culture:   document.getElementById('f-culture').value,
+    surface:   parseFloat(document.getElementById('f-surface').value) || 1,
+    altitude:  parseFloat(document.getElementById('f-altitude').value) || 0,
+    pluie:     parseFloat(document.getElementById('f-pluie').value) || 0,
+    temp:      parseFloat(document.getElementById('f-temp').value) || 0,
+    sol:       document.getElementById('f-sol').value,
+    engrais:   document.getElementById('f-engrais').value,
+    irrigation:document.getElementById('f-irrigation').value,
+    saison:    document.getElementById('f-saison').value,
+    probleme:  document.getElementById('f-probleme').value
+  };
+
   document.getElementById('resultEmpty').style.display = 'none';
   document.getElementById('resultContent').style.display = 'none';
   document.getElementById('resultLoading').style.display = 'block';
-  const surface = parseFloat(document.getElementById('f-surface').value);
-  const pluie   = parseFloat(document.getElementById('f-pluie').value);
-  const temp    = parseFloat(document.getElementById('f-temp').value);
-  const culture = document.getElementById('f-culture').value;
-  try {
-    const iaRes  = await fetch(`${AI_URL}/predict`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({surface,rainfall:pluie,temperature:temp})});
-    const iaData = await iaRes.json();
-    const rendement = iaData.prediction||(Math.random()*3+1).toFixed(1);
-    const confiance = Math.min(95,Math.max(70,Math.floor(rendement*15+50)));
-    showPredictionResult({rendement,confiance,
-      analyse:`Analyse IA pour ${culture} : avec ${surface} ha, ${pluie} mm de pluie et ${temp}°C, le rendement estimé est de ${rendement} t/ha. Conditions ${pluie>200?'humides':'favorables'}.`,
-      conseils:['Surveillez l\'humidité du sol régulièrement','Préparez la récolte en fonction de la météo','Appliquez un engrais organique']
-    });
-  } catch(e) {
-    const rendement = (Math.random()*3+2).toFixed(1);
-    showPredictionResult({rendement,confiance:80,analyse:`Estimation locale pour ${culture} : ${rendement} t/ha.`,conseils:[]});
-  }
-  btn.disabled = false; btn.innerHTML = '🧠 Lancer la prédiction IA';
+
+  setTimeout(()=>{
+    const res = computePrediction(inp);
+    const conseils = buildConseils(inp, res);
+    window._pendingResult = { ...res, ...inp };
+    showPredictionResult(res, buildAnalyse(inp, res), conseils);
+    btn.disabled = false; btn.innerHTML = `${IC('i-brain')} <span>Lancer la prédiction IA</span>`;
+  }, 650 + Math.random()*450);
 }
 
-function showPredictionResult(res) {
+function showPredictionResult(res, analyse, conseils){
   document.getElementById('resultLoading').style.display = 'none';
   const content = document.getElementById('resultContent');
   content.style.display = 'flex';
-  document.getElementById('res-rendement').textContent = res.rendement;
-  document.getElementById('res-conf').textContent = res.confiance+'%';
-  document.getElementById('res-conf-bar').style.width = res.confiance+'%';
-  let html = `<p>${res.analyse}</p>`;
-  if(res.conseils&&res.conseils.length) html += `<div style="margin-top:12px;"><strong>💡 Conseils :</strong><ul>${res.conseils.map(c=>`<li>${c}</li>`).join('')}</ul></div>`;
+
+  const elR = document.getElementById('res-rendement');
+  elR.textContent = FMT1(res.rendement);
+  elR.style.animation = 'none'; void elR.offsetWidth; elR.style.animation = '';
+
+  document.getElementById('res-production').textContent = FMT1(res.production) + ' t';
+  document.getElementById('res-confit').textContent = res.confiance + '%';
+  document.getElementById('res-conf').textContent = res.confiance + '%';
+  const bar = document.getElementById('res-conf-bar');
+  bar.style.width = '0%';
+  setTimeout(()=>{ bar.style.width = res.confiance + '%'; }, 60);
+
+  let html = `<p>${analyse}</p>`;
+  if (conseils && conseils.length) html += `<div style="margin-top:12px;"><strong>${IC('i-bulb')} Conseils :</strong><ul>${conseils.map(c=>`<li>${c}</li>`).join('')}</ul></div>`;
   document.getElementById('res-text').innerHTML = html;
-  window._pendingResult = res;
 }
 
-async function savePrediction() {
-  if(!window._pendingResult) return;
+function savePrediction(){
+  if (!window._pendingResult) { toast('Lancez d\'abord une prédiction.', 'info'); return; }
   const p = window._pendingResult;
-  try {
-    await apiCall('/predictions/save','POST',{
-      surface_ha:     parseFloat(document.getElementById('f-surface').value),
-      culture_type:   document.getElementById('f-culture').value,
-      pluie_mm:       parseFloat(document.getElementById('f-pluie').value),
-      temperature_c:  parseFloat(document.getElementById('f-temp').value),
-      type_sol:       document.getElementById('f-sol').value,
-      rendement_prevu:p.rendement,
-      unite_rendement:'tonnes/ha'
-    });
-    alert('✅ Prédiction sauvegardée !');
-    loadDashboardData(); loadPredictionsHistory();
-  } catch(e) { alert('Erreur : '+e.message); }
+  predictions.push({
+    id: 'p' + Date.now(),
+    created_at: new Date().toISOString(),
+    culture_type: p.culture,
+    surface_ha: p.surface,
+    pluie_mm: p.pluie,
+    temperature_c: p.temp,
+    type_sol: p.sol,
+    altitude: p.altitude,
+    engrais: p.engrais,
+    irrigation: p.irrigation,
+    saison: p.saison,
+    probleme: p.probleme,
+    rendement_prevu: p.rendement,
+    production_t: p.production,
+    confiance: p.confiance
+  });
+  savePredictions();
+  toast('Prédiction sauvegardée !', 'ok');
+  renderDashboard();
+  renderPredictionHistory();
 }
 
-async function loadPredictionsHistory() {
-  try {
-    const data  = await apiCall('/predictions/history');
-    const preds = data.predictions||[];
-    const tbody = document.getElementById('predHistoryBody');
-    if(!preds.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--faint);">Aucune prédiction</td></tr>';return;}
-    tbody.innerHTML = preds.map(p=>`
-      <tr>
-        <td>${new Date(p.created_at).toLocaleDateString('fr-FR')}</td>
-        <td><span class="badge badge-green">${p.culture_type||'Riz'}</span></td>
-        <td>${p.surface_ha} ha</td>
-        <td class="rendement-val">${p.rendement_prevu} t/ha</td>
-        <td><span class="badge badge-gold">—</span></td>
-      </tr>`).join('');
-  } catch(e) { console.warn(e); }
+function renderPredictionHistory(){
+  const tbody = document.getElementById('predHistoryBody');
+  const sorted = predictions.slice().reverse();
+  if (!sorted.length){ tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--faint);">Aucune prédiction pour le moment</td></tr>'; return; }
+  tbody.innerHTML = sorted.map(p=>`
+    <tr>
+      <td>${dateFmt(p.created_at)}</td>
+      <td><span class="badge badge-green">${CULT_ICON(p.culture_type)} ${p.culture_type}</span></td>
+      <td>${FMT1(p.surface_ha)} ha</td>
+      <td class="rendement-val">${FMT1(p.rendement_prevu)} t/ha</td>
+      <td>${FMT1(p.production_t)} t</td>
+      <td><span class="badge ${p.confiance>=85?'badge-green':p.confiance>=70?'badge-gold':'badge-red'}">${p.confiance||'?'}%</span></td>
+      <td><button class="btn-del" title="Supprimer" onclick="deletePrediction('${p.id}')">${IC('i-trash')}</button></td>
+    </tr>`).join('');
 }
 
-async function loadFields() {
-  try {
-    const data   = await apiCall('/fields');
-    const fields = data.fields||data;
-    const total  = fields.reduce((s,f)=>s+(parseFloat(f.surface_ha)||0),0).toFixed(1);
-    document.getElementById('parcelle-surface').textContent = total;
-    document.getElementById('parcelle-count').textContent   = fields.length;
-    document.getElementById('parcelle-irrig').textContent   = fields.filter(f=>f.irrigation==='complète').length;
-    const tbody = document.getElementById('fieldsTableBody');
-    if(!fields.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:28px;color:var(--faint);">Aucune parcelle</td></tr>';return;}
-    tbody.innerHTML = fields.map(f=>`
-      <tr>
-        <td><strong>${f.name||f.nom}</strong></td>
-        <td>${f.culture_type||f.culture||'—'}</td>
-        <td>${f.surface_ha||f.surface||0} ha</td>
-        <td>${f.soil_type||f.sol||'—'}</td>
-        <td><span class="badge badge-green">Actif</span></td>
-      </tr>`).join('');
-  } catch(e) { console.warn(e); }
+function deletePrediction(id){
+  if (!confirm('Supprimer cette prédiction ?')) return;
+  predictions = predictions.filter(p => p.id !== id);
+  savePredictions();
+  toast('Prédiction supprimée.', 'info');
+  renderDashboard();
+  renderPredictionHistory();
 }
 
-async function loadMarket() {
-  try {
-    const data = await apiCall('/market/listings').catch(()=>null);
-    if(data&&data.listings) marketList = data.listings;
-    else marketList = [
-      {culture:'Riz',   qty:800, prix:1200,vendeur:'Rakoto Jean', loc:'Fandriana centre',  tel:'034 11 111 11',date:'2026-05-28'},
-      {culture:'Maïs',  qty:500, prix:850, vendeur:'Rasoa Marie',  loc:'Tsarahonenana',     tel:'033 22 222 22',date:'2026-05-27'},
-      {culture:'Manioc',qty:1200,prix:450, vendeur:'Rabe Paul',    loc:'Ambohimahasoa',     tel:'032 33 333 33',date:'2026-05-26'},
-    ];
-    renderMarket();
-  } catch(e) { renderMarket(); }
-}
+function exportCSV(){
+  if (!predictions.length) { toast('Aucune donnée à exporter.', 'info'); return; }
+  const head = ['Date','Culture','Surface (ha)','Pluie (mm)','Temp (°C)','Sol','Rendement (t/ha)','Production (t)','Confiance (%)'];
+  const rows = predictions.map(p => [dateStr(p.created_at), p.culture_type, p.surface_ha, p.pluie_mm, p.temperature_c, p.type_sol, p.rendement_prevu, p.production_t, p.confiance]);
+  const csv = [head, ...rows].map(r => r.map(x => '"' + String(x ?? '').replace(/"/g,'""') + '"').join(';')).join('\n');
+  const blob = new Blob(['\ufeff' + csv], { type:'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'agrismart_predictions.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  toast('Export CSV téléchargé.', 'ok');
+}/* ─── Marché ─── */
+let _mktQuery = '', _mktFilter = 'Toutes';
 
-function renderMarket() {
+function renderMarket(){
   const grid = document.getElementById('marketGrid');
-  document.getElementById('mkt-count').textContent    = marketList.length;
-  document.getElementById('mkt-cultures').textContent = new Set(marketList.map(m=>m.culture)).size;
-  if(!marketList.length){grid.innerHTML='<div style="text-align:center;padding:48px;color:var(--faint);">Aucune annonce publiée</div>';return;}
-  grid.innerHTML = marketList.map(m=>`
-    <div class="market-card">
-      <div class="market-card-header">
-        <div><div class="mc-culture">${m.culture}</div><div class="mc-farmer">👨‍🌾 ${m.vendeur}</div></div>
-        <div><div class="mc-price">${m.prix}</div><div class="mc-price-unit">Ar/kg</div></div>
-      </div>
-      <div class="mc-details"><span class="mc-tag">📦 ${m.qty} kg</span><span class="mc-tag">📍 ${m.loc}</span></div>
-      <div class="mc-footer">
-        <button class="btn-contact" onclick="alert('📞 Contacter : ${m.tel}')">Contacter</button>
-        <span class="mc-date">${m.date}</span>
-      </div>
-    </div>`).join('');
-}
+  if (!grid) return;
+  const query = (document.getElementById('mktSearch').value || '').trim().toLowerCase();
 
-function openModal()  { document.getElementById('modalOverlay').classList.add('open'); }
-function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+  const chips = document.getElementById('mktChips');
+  const cultures = ['Toutes', ...new Set(market.map(m => m.culture))];
+  chips.innerHTML = cultures.map(c =>
+    `<button class="chip ${_mktFilter===c?'active':''}" onclick="setMktFilter('${c}')">${c==='Toutes'?IC('i-box'):CULT_ICON(c)} ${c}</button>`
+  ).join('');
 
-async function addListing() {
-  const newItem = {
-    culture:document.getElementById('m-culture').value,
-    qty:    parseInt(document.getElementById('m-qty').value),
-    prix:   parseInt(document.getElementById('m-prix').value),
-    vendeur:document.getElementById('m-vendeur').value,
-    loc:    document.getElementById('m-loc').value,
-    tel:    document.getElementById('m-tel').value,
-    date:   new Date().toISOString().split('T')[0]
-  };
-  try { await apiCall('/market/listings','POST',newItem); loadMarket(); }
-  catch(e) { marketList.unshift(newItem); renderMarket(); }
-  closeModal();
-}
+  let list = market.slice();
+  if (_mktFilter !== 'Toutes') list = list.filter(m => m.culture === _mktFilter);
+  if (query) list = list.filter(m => (m.culture + ' ' + m.vendeur + ' ' + m.loc).toLowerCase().includes(query));
 
-function loadWeather() {
-  const days  = ['Aujourd\'hui','Demain','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
-  const icons = ['⛅','🌧️','🌦️','☀️','☀️','⛅','🌧️'];
-  const temps = [22,19,21,24,25,23,20];
-  const rains = [180,240,150,60,40,90,200];
-  document.getElementById('weatherRow').innerHTML = days.map((d,i)=>`
-    <div class="weather-card ${i===0?'today':''}">
-      <div class="wday">${d}</div>
-      <div class="wicon">${icons[i]}</div>
-      <div class="wtemp">${temps[i]}°C</div>
-      <div class="wrain">💧 ${rains[i]}mm</div>
-    </div>`).join('');
-  document.getElementById('alertsContainer').innerHTML = `
-    <div class="alert-card warn">
-      <span class="aicon">🌧️</span>
-      <div><div class="atitle">Fortes pluies demain</div><div class="atext">Précipitations 240mm prévues. Vérifiez les canaux d'évacuation et protégez les cultures sensibles.</div></div>
-    </div>
-    <div class="alert-card ok">
-      <span class="aicon">☀️</span>
-      <div><div class="atitle">Bonne fenêtre de récolte jeudi–vendredi</div><div class="atext">Conditions optimales prévues pour la récolte du maïs. Profitez de cette fenêtre sèche.</div></div>
+  animateNum('[data-kpi="mktcount"]', market.length, 0, '');
+  animateNum('[data-kpi="mktcultures"]', new Set(market.map(m=>m.culture)).size, 0, '');
+
+  const rizPrices = market.filter(m => m.culture === 'Riz').map(m => +m.prix);
+  const allPrices = market.map(m => +m.prix);
+  animateNum('[data-kpi="mktrizo"]', rizPrices.length ? Math.round(rizPrices.reduce((a,b)=>a+b,0)/rizPrices.length) : null, 0, '');
+  animateNum('[data-kpi="mktavg"]', allPrices.length ? Math.round(allPrices.reduce((a,b)=>a+b,0)/allPrices.length) : null, 0, '');
+
+  if (!list.length){
+    grid.innerHTML = `<div class="empty-state">
+      <div class="es-icon">${IC('i-search')}</div>
+      <div class="es-title">Aucune annonce trouvée</div>
+      <div class="es-sub">Ajustez votre recherche ou publiez la première annonce !</div>
     </div>`;
+    return;
+  }
+  grid.innerHTML = list.map(m=>`
+    <div class="market-card" onclick="openContact('${m.id}')">
+      <div class="market-card-header">
+        <div><div class="mc-culture">${CULT_ICON(m.culture)} ${m.culture}</div><div class="mc-farmer">${IC('i-user')} ${m.vendeur}</div></div>
+        <div><div class="mc-price">${FMT(m.prix)}</div><div class="mc-price-unit">Ariary / kg</div></div>
+      </div>
+      <div class="mc-details"><span class="mc-tag">${IC('i-box')} ${FMT(m.qty)} kg</span><span class="mc-tag">${IC('i-pin')} ${m.loc}</span></div>
+      <div class="mc-footer">
+        <button class="btn-contact" onclick="event.stopPropagation();openContact('${m.id}')">${IC('i-phone')} Contacter</button>
+        <span class="mc-date">${IC('i-clock')} ${dateFmtShort(m.date)}</span>
+      </div>
+    </div>`).join('');
 }
 
-function showPage(name, el) {
+function setMktFilter(c){ _mktFilter = c; renderMarket(); }
+
+function openModal(){ document.getElementById('modalOverlay').classList.add('open'); }
+function closeModal(){ document.getElementById('modalOverlay').classList.remove('open'); }
+
+function addListing(){
+  const culture = document.getElementById('m-culture').value;
+  const qty = parseInt(document.getElementById('m-qty').value) || 0;
+  const prix = parseInt(document.getElementById('m-prix').value) || 0;
+  const vendeur = document.getElementById('m-vendeur').value.trim();
+  const loc = document.getElementById('m-loc').value.trim();
+  const tel = document.getElementById('m-tel').value.trim();
+
+  if (qty <= 0 || prix <= 0) { toast('Quantité et prix doivent être supérieurs à 0.', 'err'); return; }
+  if (!vendeur) { toast('Indiquez votre nom.', 'err'); return; }
+
+  market.unshift({ id:'m'+Date.now(), culture, qty, prix, vendeur, loc, tel, date: dateStr(Date.now()) });
+  saveMarket();
+  renderMarket();
+  closeModal();
+  toast('Annonce publiée avec succès !', 'ok');
+}
+
+/* Contact */
+function normalizePhone(tel){
+  let t = (tel || '').replace(/[^\d]/g,'');
+  if (t.length === 9) t = '0' + t;
+  if (t.startsWith('0')) t = '261' + t.slice(1);
+  return t;
+}
+function openContact(id){
+  const m = market.find(x => x.id === id);
+  if (!m) return;
+  const phone = normalizePhone(m.tel);
+  document.getElementById('ct-emoji').innerHTML = CULT_ICON(m.culture);
+  document.getElementById('ct-name').textContent = m.vendeur;
+  document.getElementById('ct-sub').innerHTML = `${m.culture} · ${FMT(m.qty)} kg · ${FMT(m.prix)} Ar/kg<br><span style="color:var(--mid);font-size:12px;">${IC('i-pin')} ${m.loc} · ${m.tel}</span>`;
+  document.getElementById('ct-phone').textContent = m.tel || '—';
+  document.getElementById('ct-call').href = 'tel:+' + phone;
+  document.getElementById('ct-wa').href = 'https://wa.me/' + phone + '?text=' + encodeURIComponent('Bonjour, je suis intéressé(e) par votre annonce : ' + m.culture + ' (' + m.qty + ' kg) à ' + m.prix + ' Ar/kg.');
+  document.getElementById('contactOverlay').classList.add('open');
+}
+function closeContact(){ document.getElementById('contactOverlay').classList.remove('open'); }
+
+function copyPhone(){
+  const code = document.getElementById('ct-phone');
+  const txt = code.textContent.replace(/\s/g,'');
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt);
+  toast('Numéro copié.', 'ok');
+}/* ─── Parcelles ─── */
+function renderFields(){
+  const total = fields.reduce((s,f)=>s+(parseFloat(f.surface_ha)||0),0);
+  animateNum('[data-kpi="parcelleSurface"]', +total.toFixed(1), 1, '');
+  animateNum('[data-kpi="parcelleCount"]', fields.length, 0, '');
+  animateNum('[data-kpi="parcelleIrrig"]', fields.filter(f=>f.irrigation==='complète').length, 0, '');
+
+  const best = fields.reduce((acc,f)=>{
+    const base = CULTURES[f.culture_type]?.base || 3;
+    const est = base * (f.irrigation==='complète'?1.12:f.irrigation==='partielle'?1.06:1) * (f.status==='active'?1:0.7);
+    return est > acc.v ? { n:f.name, v:est } : acc;
+  }, { n:null, v:0 });
+  animateNum('[data-kpi="parcelleBest"]', best.n ? +best.v.toFixed(1) : null, 1, '');
+
+  const tbody = document.getElementById('fieldsTableBody');
+  if (!fields.length){ tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--faint);">Aucune parcelle — ajoutez-en une !</td></tr>'; return; }
+  tbody.innerHTML = fields.map(f=>`
+    <tr>
+      <td><strong>${f.name}</strong></td>
+      <td><span class="badge badge-blue">${CULT_ICON(f.culture_type)} ${f.culture_type||'—'}</span></td>
+      <td>${FMT1(f.surface_ha)} ha</td>
+      <td>${f.soil_type||'—'}</td>
+      <td>${f.irrigation||'—'}</td>
+      <td><span class="badge ${f.status==='active'?'badge-green':'badge-gold'}">${f.status==='active'?'Actif':'Inactif'}</span></td>
+      <td><button class="btn-del" title="Supprimer" onclick="deleteField('${f.id}')">${IC('i-trash')}</button></td>
+    </tr>`).join('');
+}
+
+function openFieldModal(){ document.getElementById('fieldOverlay').classList.add('open'); }
+function closeFieldModal(){ document.getElementById('fieldOverlay').classList.remove('open'); }
+
+function addField(){
+  const name = document.getElementById('p-name').value.trim();
+  const surface = parseFloat(document.getElementById('p-surface').value) || 0;
+  if (!name) { toast('Indiquez un nom pour la parcelle.', 'err'); return; }
+  if (surface <= 0) { toast('Surface invalide.', 'err'); return; }
+  fields.push({
+    id: 'f'+Date.now(),
+    name,
+    culture_type: document.getElementById('p-culture').value,
+    surface_ha: surface,
+    soil_type: document.getElementById('p-sol').value,
+    irrigation: document.getElementById('p-irrigation').value,
+    status: 'active'
+  });
+  saveFields();
+  renderFields();
+  closeFieldModal();
+  toast('Parcelle ajoutée !', 'ok');
+}
+
+function deleteField(id){
+  if (!confirm('Supprimer cette parcelle ?')) return;
+  fields = fields.filter(f => f.id !== id);
+  saveFields();
+  renderFields();
+  toast('Parcelle supprimée.', 'info');
+}
+
+/* ─── Météo & alertes ─── */
+function seededRand(seed){
+  let s = seed >>> 0;
+  return () => { s = (s * 1103515245 + 12345) % 2147483648; return s / 2147483648; };
+}
+
+const WICON = rain => rain >= 220 ? 'i-rain' : rain >= 150 ? 'i-cloud' : rain >= 60 ? 'i-cloudsun' : 'i-sun';
+
+function renderWeather(){
+  const days  = [];
+  const icons = [];
+  const temps = [];
+  const rains = [];
+  const today = new Date();
+  const seedBase = Math.floor(today.getTime() / 86400000) * 7;
+
+  for (let i = 0; i < 7; i++){
+    const d = new Date(today.getTime() + i * 86400000);
+    const rnd = seededRand(seedBase + i);
+    const label = i===0 ? 'Aujourd\'hui' : i===1 ? 'Demain' : d.toLocaleDateString('fr-FR', { weekday:'long' });
+    const temp = Math.round(22 + rnd()*7 - 3);
+    let rain;
+    if (i === 1) rain = 240;
+    else {
+      const r = rnd();
+      rain = r < 0.30 ? Math.round(20 + rnd()*40)
+           : r < 0.55 ? Math.round(90 + rnd()*70)
+           : r < 0.80 ? Math.round(180 + rnd()*80)
+           : Math.round(40 + rnd()*20);
+    }
+    const icon = WICON(rain);
+    days.push(label); icons.push(icon); temps.push(temp); rains.push(rain);
+  }
+
+  document.getElementById('weatherRow').innerHTML = days.map((d,i)=>`
+    <div class="weather-card ${i===0?'today':(rains[i]>=200?' warn':'')}">
+      <div class="wday">${d}</div>
+      <div class="wicon">${IC(icons[i])}</div>
+      <div class="wtemp">${temps[i]}°C</div>
+      <div class="wrain" style="${i===0?'color:rgba(255,255,255,.7);':(rains[i]>=200?'color:var(--gold-warm);font-weight:700;':'')}">${IC('i-drop')} ${rains[i]}mm</div>
+    </div>`).join('');
+
+  const alerts = [];
+
+  const maxIdx = rains.indexOf(Math.max(...rains));
+  if (maxIdx >= 0 && rains[maxIdx] >= 200){
+    alerts.push({ type:'warn', icon:'i-rain', title:`Fortes pluies ${days[maxIdx].toLowerCase()} (${rains[maxIdx]} mm)`, text:'Précipitations abondantes attendues. Vérifiez les canaux d\'évacuation, surélevez les semis sensibles et protégez les cultures fragiles.' });
+  }
+
+  for (let i = 0; i <= 5; i++){
+    if (rains[i] < 80 && rains[i+1] < 80 && temps[i] >= 20 && temps[i+1] >= 20){
+      alerts.push({ type:'ok', icon:'i-sun', title:`Bonne fenêtre de récolte ${days[i].toLowerCase()} – ${days[i+1].toLowerCase()}`, text:'Conditions sèches et douces attendues : profitez-en pour planifier la récolte et le séchage des grains.' });
+      break;
+    }
+  }
+
+  if (rains[0] < 60){
+    alerts.push({ type:'info', icon:'i-drop', title:'Période sèche aujourd\'hui', text:'Faible pluviométrie en cours : intensifiez l\'irrigation ciblée et paillez les cultures pour conserver l\'humidité du sol.' });
+  }
+  if (temps[0] <= 18){
+    alerts.push({ type:'info', icon:'i-thermo', title:'Températures fraîches', text:'Risque de froid pour les cultures sensibles : protégez les jeunes plants avec un paillage ou un voile de protection.' });
+  }
+  if (!alerts.length){
+    alerts.push({ type:'ok', icon:'i-leaf', title:'Conditions globalement stables', text:'Aucun risque majeur détecté pour les prochains jours. Poursuivez l\'entretien habituel de vos parcelles.' });
+  }
+
+  document.getElementById('alertsContainer').innerHTML = alerts.map(a=>`
+    <div class="alert-card ${a.type}">
+      <span class="aicon">${IC(a.icon)}</span>
+      <div><div class="atitle">${a.title}</div><div class="atext">${a.text}</div></div>
+    </div>`).join('');
+}/* ─── Navigation ─── */
+function showPage(name, el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('page-'+name).classList.add('active');
-  el.classList.add('active');
-  if(name==='parcelles') loadFields();
-  if(name==='marche')    loadMarket();
-  if(name==='dashboard') loadDashboardData();
+  const pg = document.getElementById('page-' + name);
+  if (pg) pg.classList.add('active');
+  if (el) el.classList.add('active');
+  if (name === 'parcelles') renderFields();
+  if (name === 'marche') renderMarket();
+  if (name === 'meteo') renderWeather();
+  if (name === 'dashboard') renderDashboard();
+  if (window.innerWidth <= 800) togglassidebarClose();
 }
 
-window.onload = () => {
-  const t = localStorage.getItem('token');
-  if(t){ authToken=t; loadUserProfile().then(()=>startApp()).catch(()=>{localStorage.removeItem('token');}); }
-};
+function toggleSidebar(){
+  const sb = document.getElementById('sidebar');
+  const bd = document.getElementById('sidebarBackdrop');
+  const open = !sb.classList.contains('open');
+  sb.classList.toggle('open', open);
+  bd.classList.toggle('show', open);
+}
+function togglassidebarClose(){
+  const sb = document.getElementById('sidebar');
+  const bd = document.getElementById('sidebarBackdrop');
+  sb.classList.remove('open');
+  bd.classList.remove('show');
+}
+
+/* ─── Utilitaires dates ─── */
+function dateFmt(iso){
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (isNaN(d)) return '—';
+  const now = new Date();
+  const diff = now.getTime() - d.getTime();
+  const mins = Math.floor(diff/60000);
+  if (mins < 1) return 'à l\'instant';
+  if (mins < 60) return 'il y a ' + mins + ' min';
+  const hrs = Math.floor(mins/60);
+  if (hrs < 24) return 'il y a ' + hrs + ' h';
+  if (hrs < 48) return 'hier';
+  return d.toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric' }) + ' · ' + d.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
+}
+function dateFmtShort(str){
+  if (!str) return '—';
+  const d = new Date(str + 'T00:00:00');
+  if (isNaN(d)) return str;
+  return d.toLocaleDateString('fr-FR', { day:'numeric', month:'short' });
+}
+
+/* ─── Auto connexion au chargement ─── */
+window.addEventListener('load', () => {
+  if (currentUser) {
+    seedDB();
+    startApp();
+  }
+});
+
+/* Fermer les modales au clic sur le fond */
+document.querySelectorAll('.modal-overlay').forEach(ov=>{
+  ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('open'); });
+});
+
+/* Touche Entrée sur l'écran de connexion */
+document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+document.getElementById('loginEmail').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 </script>
 </body>
 </html>
